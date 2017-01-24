@@ -50,8 +50,10 @@
 
         let scene, renderer, camera;
 
-        let triangleMesh;
         let squareMesh;
+        let triangleGeometry;
+
+        let triangleMesh;
 
         let faceLine;
 
@@ -69,6 +71,8 @@
         var numberContextArray = [];
         var numberMeshArray = [];
         var numberTextureArray = [];
+
+        let testMesh;
 
         // let bottomLipGeometry;
         // let topLipGeometry;
@@ -202,6 +206,58 @@
             numberMeshArray.push( mesh1 )
             scene.add( mesh1 )
           }
+
+
+          // let lineGeometry = new THREE.Geometry();
+          //
+          // let lineMaterial = new THREE.LineBasicMaterial({
+          //   color: 0x0000ff
+          // });
+          //
+          // lineMesh = new THREE.Line( lineGeometry, lineMaterial );
+          // scene.add( lineMesh );
+
+
+          // 35 44 2
+
+          triangleGeometry = new THREE.Geometry();
+          triangleGeometry.vertices.push(new THREE.Vector3( 0.0, 10.0, 0.0 ));
+          triangleGeometry.vertices.push(new THREE.Vector3( -10.0, -10.0, 0.0 ));
+          triangleGeometry.vertices.push(new THREE.Vector3( 10.0, -10.0, 0.0 ));
+          triangleGeometry.faces.push(new THREE.Face3( 0, 1, 2 ));
+          // triangleGeometry.dynamic = true;
+          // triangleGeometry.verticesNeedUpdate = true;
+          // triangleGeometry.__dirtyVertices = true;
+
+          // triangleGeometry.faces[0].vertexColors[0] = new THREE.Color( 0xFF0000 );
+          // triangleGeometry.faces[0].vertexColors[1] = new THREE.Color( 0x00FF00 );
+          // triangleGeometry.faces[0].vertexColors[2] = new THREE.Color( 0x0000FF );
+
+          // let triangleMaterial = new THREE.LineBasicMaterial({
+          let triangleMaterial = new THREE.MeshBasicMaterial({
+            color: 0x0000FF,
+            // vertexColors: THREE.VertexColors,
+            side: THREE.DoubleSide
+            // wireframe: true
+          });
+
+          // triangleMesh = new THREE.Line( triangleGeometry, triangleMaterial );
+          triangleMesh = new THREE.Mesh( triangleGeometry, triangleMaterial );
+          scene.add( triangleMesh );
+          // triangleMesh.position.set( 0, 0, 0 );
+          // triangleMesh.geometry.verticesNeedUpdate = true;
+          // triangleMesh.geometry.matrixWorldNeedsUpdate = true;
+          // triangleMesh.geometry.dynamic = true;
+
+          //
+
+          // let testGeometry = new THREE.Geometry();
+          // testGeometry.vertices.push(new THREE.Vector3( 0.0, 10.0, 0.0 ));
+          // testGeometry.vertices.push(new THREE.Vector3( 10.0, 10.0, 0.0 ));
+          // testGeometry.vertices.push(new THREE.Vector3( 0.0, 10.0, 10.0 ));
+          // testGeometry.faces.push(new THREE.Face3( 0, 1, 2 ));
+          // testMesh
+
         }
 
         function onWindowResize() {
@@ -222,18 +278,39 @@
           // }, 1000);
 
           requestAnimationFrame( animate );
-          TWEEN.update();
 
-            // for(let i = 0; i < 40; i++) {
-            //   if(i%2 === 0) {
-            //     lineMesh.geometry.vertices[i] = {x: -(positions[0][0] -185), y: -(positions[0][1] -155), z: 0};;
-            //   } else {
-            //     lineMesh.geometry.vertices[i] = {x: -(positions[i][0] -185), y: -(positions[i][1] -155), z: 0};
-            //   }
-            // }
-            // console.log(lineMesh.geometry.vertices.length);
-          // lineMesh.geometry.verticesNeedUpdate = true;
-          // console.log(lineMesh.geometry);
+          // lineMesh.geometry.vertices[0] = {x: -(positions[44][0] -185), y: -(positions[44][1] -155), z: -5 }
+          // lineMesh.geometry.vertices[1] = {x: -(positions[35][0] -185), y: -(positions[35][1] -155), z: -5 }
+          // lineMesh.geometry.vertices[2] = {x: -(positions[2][0] -185), y: -(positions[2][1] -155), z: -5 }
+          // triangleMesh.geometry.__dirtyVertices = true;
+          // triangleMesh.geometry.verticesNeedUpdate = true;
+          // triangleMesh.geometry.dynamic = true;
+
+          //
+
+          console.log(triangleMesh.geometry.vertices[0].set);
+
+          triangleMesh.geometry.vertices[0].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
+          triangleMesh.geometry.vertices[1].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
+          triangleMesh.geometry.vertices[2].set(-(positions[2][0] -185), -(positions[2][1] -155), -5);
+          // triangleMesh.geometry.vertices[2] = {x: -(positions[2][0] -185), y: -(positions[2][1] -155), z: -5 }
+          // triangleMesh.geometry.__dirtyVertices = true;
+          triangleMesh.geometry.verticesNeedUpdate = true;
+          // triangleMesh.geometry.dynamic = true;
+
+          //
+
+          // for(let i = 0; i < 40; i++) {
+          //   if(i%2 === 0) {
+          //     lineMesh.geometry.vertices[i] = {x: -(positions[0][0] -185), y: -(positions[0][1] -155), z: 0};;
+          //   } else {
+          //     lineMesh.geometry.vertices[i] = {x: -(positions[i][0] -185), y: -(positions[i][1] -155), z: 0};
+          //   }
+          // }
+          lineMesh.geometry.verticesNeedUpdate = true;
+          // lineMesh.geometry.__dirtyVertices = true;
+
+          //
 
           for (let i = 0; i < cubeMeshArray.length; i++) {
 
@@ -244,25 +321,8 @@
               numberMeshArray[i].position.set(-(positions[i][0] -185), -(positions[i][1] -155), -5);
               numberTextureArray[i].needsUpdate = true;
 
-              // run through each point and draw a line for each
-              // console.log(lineMesh.geometry.vertices.length);
-              // console.log(lineMesh.geometry.vertices[i].x);
-              // console.log(lineMesh.geometry.vertices[i].y);
-              // lineMeshArray[i].geometry.vertices[0] = currentX;
-              // lineMeshArray[i].geometry.vertices[1] = currentY;
-              // for (let i = 0; i < positions.length; i += 1) {
-              //   lineMesh.geometry.vertices[i].x = - (positions[i][0] -185);
-              //   lineMesh.geometry.vertices[i].y = - (positions[i][1] -155);;
-              // }
-
-              // for (let i = 0; i < lineMesh.geometry.vertices.length; i++) {
-                // console.log(lineMeshArray[i].geometry.vertices);
-                // lineMeshArray.vertices.push(
-                // 	new THREE.Vector3( 0, 0, 0 )
-                // );
-              // }
-              // lineMeshArray[i].geometry.verticesNeedUpdate = true;
   				}
+
 
           // for (let p = 0; p < 17; p++) {
           //   if(p < 15){
@@ -283,6 +343,7 @@
           // cc.clearRect(0, 0, canvasInput.width, canvasInput.height);
           // ctracker.draw( canvasInput );
 
+          TWEEN.update();
           controls.update();
           renderer.render( scene, camera );
 
