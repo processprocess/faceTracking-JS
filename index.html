@@ -131,8 +131,11 @@
         let chinLine;
         let rightEyeBrowLine;
 
+        let lineMesh;
+
         // let cubeMesh;
         let cubeMeshArray = [];
+        let lineMeshArray = [];
 
         // let bottomLipGeometry;
         // let topLipGeometry;
@@ -145,7 +148,14 @@
         begin();
         animate();
 
+
+
         function begin(){
+
+          // setInterval(function() {
+          //   console.log('test');
+          // }, 1000);
+
           camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
           camera.position.z = 200;
 
@@ -183,7 +193,7 @@
           // let lineMaterial = new THREE.LineBasicMaterial({
           // 	color: 0x0000ff
           // });
-          //
+
           // let chinGeometry = new THREE.Geometry();
           // for (let i = 0; i<15; i++) {
           //   chinGeometry.vertices.push(
@@ -209,36 +219,54 @@
   					let cubeMesh = new THREE.Mesh( cubeGeometry, cubeMaterial );
   					cubeMeshArray.push( cubeMesh );
             faceContainerMesh.add( cubeMesh );
-            // scene.add( cubeMesh );
   				}
           faceContainerMesh.position.set(0, 0, 0);
           scene.add( faceContainerMesh );
 
+          //
+
+          let lineGeometry = new THREE.Geometry();
+
+          let lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x0000ff
+          });
+
+            lineGeometry.vertices.push(
+            	new THREE.Vector3( 0, 0, 0 ),
+            	new THREE.Vector3( 100, 100, 0 )
+            );
+
+          lineMesh = new THREE.Line( lineGeometry, lineMaterial );
+          scene.add( lineMesh );
+
+          // console.log(lineMesh.geometry.vertices[0]);
+          // lineMesh.geometry.vertices[0] = {x: 100, y: 30, z: 0}
+          // lineMesh.geometry.vertices[1] = {x: 100, y: 30, z: 0}
+          // console.log(lineMesh.geometry.vertices[0]);
+
+
+          // at this to the update function
+          // iterate over this
+          // set next item to equal amount
+
+          // for (var i = 0; i < 100; i++) {
+          //   var lineMesh = new THREE.Line( lineGeometry, lineMaterial );
+          //     lineMesh.geometry.vertices.push(
+          //     	// new THREE.Vector3( 0, 0, 0 ),
+          //       new THREE.Vector3( 0, 0, 0 )
+          //     );
+          //   lineMeshArray.push( lineMesh );
+          // }
+          // faceContainerMesh.add( lineMesh );
+          // // chinLine = new THREE.Line( chinGeometry, lineMaterial );
+          // // scene.add( chinLine );
+
         }
 
-        function getPositions(){
-          let positions = ctracker.getCurrentPosition();
-          smoothOutAnimation(positions)
-          console.log(positions);
-        }
 
-        // function smoothOutAnimation (positions) {
-        //   // console.log(positions);
-        //   for (let i = 0; i < cubeMeshArray.length; i++) {
-        //     new TWEEN.Tween( cubeMeshArray[i].position ).to( {
-        //       x: ((positions[i][0] * 2 / renderer.domElement.clientHeight ) * 2 - 1) * 100,
-        //       y: ((positions[i][1] * 2 / renderer.domElement.clientWidth ) * 2 - 1) * -100,
-        //       z: 0 },
-        //       3000 )
-        //     .easing(TWEEN.Easing.Exponential.Out)
-        //     .start()
-        //     .onComplete(function(){
-        //     getPositions()
-        //     return;
-        //     // console.log('test')
-        //     });
-        //   }
-        // }
+        // copy last position of geometry
+        // animate fade out and removal from screen
+
 
         function onWindowResize() {
           camera.aspect = window.innerWidth / window.innerHeight;
@@ -246,19 +274,66 @@
           renderer.setSize( window.innerWidth, window.innerHeight );
         }
 
-
+        // function getPositionGlobal() {
+        //   let positions = ctracker.getCurrentPosition();
+        //   return positions;
+        // }
 
         function animate() {
+
+          // getPositionGlobal();
+
+          let positions = ctracker.getCurrentPosition();
+
+
+
+
+          // setInterval(function() {
+          //   console.log('test');
+          // }, 1000);
+
           // console.log(video.width);
           requestAnimationFrame( animate );
           TWEEN.update();
 
-          let positions = ctracker.getCurrentPosition();
+          // let positions = ctracker.getCurrentPosition();
 
-          for (var i = 0; i < cubeMeshArray.length; i++) {
-              cubeMeshArray[i].position.x = - (positions[i][0] -185);
-              cubeMeshArray[i].position.y = - (positions[i][1] -155);
+          // console.log(lineMesh.geometry.vertices[0]);
+          lineMesh.geometry.vertices[0] = {x: positions[0][0], y: 20, z: 0}
+          lineMesh.geometry.vertices[1] = {x: 200, y: 200, z: 0}
+          // lineMesh.geometry.vertices[0] = {x: positions[0][0], y: positions[0][1], z: 0}
+          // lineMesh.geometry.vertices[1] = {x: positions[1][1], y: positions[1][2], z: 0}
+          console.log(lineMesh.geometry.vertices[0]);
+          // console.log(positions[0][0]);
+          // console.log(positions[i][0]);
+          // lineMesh.geometry.verticesNeedUpdate = true;
+          lineMesh.geometry.verticesNeedupdate = true;
+
+          for (let i = 0; i < cubeMeshArray.length; i++) {
+            // console.log(lineMesh.geometry.vertices[1]);
+            // console.log(positions[0][0]);
+              let currentX = cubeMeshArray[i].position.x = - (positions[i][0] -185);
+              let currentY = cubeMeshArray[i].position.y = - (positions[i][1] -155);
+              // run through each point and draw a line for each
+              // console.log(lineMesh.geometry.vertices.length);
+              // console.log(lineMesh.geometry.vertices[i].x);
+              // console.log(lineMesh.geometry.vertices[i].y);
+              // lineMeshArray[i].geometry.vertices[0] = currentX;
+              // lineMeshArray[i].geometry.vertices[1] = currentY;
+              // for (let i = 0; i < positions.length; i += 1) {
+              //   lineMesh.geometry.vertices[i].x = - (positions[i][0] -185);
+              //   lineMesh.geometry.vertices[i].y = - (positions[i][1] -155);;
+              // }
+
+              // for (let i = 0; i < lineMesh.geometry.vertices.length; i++) {
+                // console.log(lineMeshArray[i].geometry.vertices);
+                // lineMeshArray.vertices.push(
+                // 	new THREE.Vector3( 0, 0, 0 )
+                // );
+              // }
+              // lineMeshArray[i].geometry.verticesNeedUpdate = true;
   				}
+          // console.log(lineMeshArray[0].geometry.vertices.length);
 
 
           // for (let p = 0; p < 17; p++) {
@@ -292,6 +367,14 @@
 
 <!-- make face bigger -->
 <!-- make those vectors -->
+
+<!-- choose two points in the array and draw a line -->
+<!-- choose random points from array -->
+<!-- get first vertext -->
+<!-- make more lines from that vertex, to another -->
+
+
+
 
 </body>
 </html>
