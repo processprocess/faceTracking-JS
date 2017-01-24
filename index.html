@@ -3,81 +3,8 @@
     <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>FaceTrackerTest</title>
-
-		<style>
-      html, body { margin: 0; padding: 0; overflow: hidden; font-family: inconsolata;}
-
-      /*#canvasForTracker {
-        position : absolute;
-        left : 0;
-        top : 0;
-      }*/
-
-      h2 {
-        /*text-align: center;*/
-        /*float: right;*/
-        position: absolute;
-        top:0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: auto;
-      }
-
-      #content {
-        text-align: center;
-        margin: 0, auto;
-        padding: 0;
-        overflow: hidden;
-        /*float: left; */
-        /*position: absolute;*/
-      }
-
-      #video{
-        /*width:100px;
-        height:100px;*/
-        opacity: .04;
-        position: absolute;
-        top:0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-
-        /*margin: auto;*/
-      }
-
-      #testingDiv{
-        font-size: 100px;
-        color:red;
-        /*width:200px;
-        height:200px;*/
-        opacity: .04;
-        background-color: red;
-        /*position: absolute;*/
-        /*top:0;
-        bottom: 0;
-        left: 0;
-        right: 0;*/
-
-        /*margin: auto;*/
-      }
-
-      #canvasForThree {
-          /*background-color: blue;*/
-          /*opacity:1;*/
-          /*width: 360px;
-          height: 200px;*/
-          /*border: 1px solid black;*/
-          /*margin: 100px;*/
-          /*padding: 0px;*/
-          /*position: fixed; /* fixed or static */*/
-          /*top: 100px;*/
-          /*left: 100px;*/
-      }
-
-		</style>
 	</head>
-
+    <link rel="stylesheet" href="styles/styles.css" media="screen" title="no title">
 	<body>
 		<script src="./libs/utils.js"></script>
 		<script src="./libs/clmtrackr.js"></script>
@@ -131,11 +58,17 @@
         let chinLine;
         let rightEyeBrowLine;
 
+        // let roundRect;
+
         let lineMesh;
 
         // let cubeMesh;
         let cubeMeshArray = [];
         let lineMeshArray = [];
+
+        var numberContextArray = [];
+        var numberMeshArray = [];
+        var numberTextureArray = [];
 
         // let bottomLipGeometry;
         // let topLipGeometry;
@@ -149,8 +82,10 @@
         animate();
 
 
-
         function begin(){
+
+
+          // scene.add(shape)
 
           // setInterval(function() {
           //   console.log('test');
@@ -166,7 +101,6 @@
           scene.add( light );
 
           let threeContainer = document.getElementById( 'canvasForThree' );
-          // threeContainer.innerHTML = 'test';
 
           renderer = new THREE.WebGLRenderer({ antialias: true });
           renderer.setPixelRatio( window.devicePixelRatio );
@@ -174,13 +108,6 @@
           threeContainer.appendChild( renderer.domElement );
           renderer.setClearColor( 0xFFFFFF, 1);
           // renderer.setClearColor( 0x333F47, 0.4);
-
-
-
-          // videoInput.width = renderer.domElement.clientWidth;
-          // videoInput.width = 230;
-          // videoInput.height = renderer.domElement.clientHeight;
-          // videoInput.height = 300;
 
           controls = new THREE.OrbitControls( camera, renderer.domElement );
           controls.enablePan = true;
@@ -203,11 +130,6 @@
           // chinLine = new THREE.Line( chinGeometry, lineMaterial );
           // scene.add( chinLine );
 
-          let cubeGeometry = new THREE.BoxGeometry(2,2,2);
-
-          let cubeMaterial = new THREE.MeshLambertMaterial({
-            color: 0x0000FF
-          });
 
           let faceContainerGeometry = new THREE.BoxGeometry(2,2,2);
           let faceContainerMaterial = new THREE.MeshLambertMaterial({
@@ -215,9 +137,14 @@
           });
           let faceContainerMesh = new THREE.Mesh( faceContainerGeometry, faceContainerMaterial );
 
+          let cubeGeometry = new THREE.BoxGeometry(2,2,2);
+          let cubeMaterial = new THREE.MeshLambertMaterial({
+            color: 0x0000FF
+          });
+
           for (var i = 0; i < 71; i++) {
   					let cubeMesh = new THREE.Mesh( cubeGeometry, cubeMaterial );
-  					cubeMeshArray.push( cubeMesh );
+            cubeMeshArray.push( cubeMesh );
             faceContainerMesh.add( cubeMesh );
   				}
           faceContainerMesh.position.set(0, 0, 0);
@@ -230,24 +157,15 @@
           let lineMaterial = new THREE.LineBasicMaterial({
             color: 0x0000ff
           });
-
-            lineGeometry.vertices.push(
-            	new THREE.Vector3( 0, 0, 0 ),
-            	new THREE.Vector3( 100, 100, 0 )
-            );
+          // for(i=0; i<200; i++){
+            // lineGeometry.vertices.push(
+            // 	new THREE.Vector3( 0, 0, 0 ),
+            // 	new THREE.Vector3( 50, 50, 0 )
+            // );
+          // }
 
           lineMesh = new THREE.Line( lineGeometry, lineMaterial );
           scene.add( lineMesh );
-
-          // console.log(lineMesh.geometry.vertices[0]);
-          // lineMesh.geometry.vertices[0] = {x: 100, y: 30, z: 0}
-          // lineMesh.geometry.vertices[1] = {x: 100, y: 30, z: 0}
-          // console.log(lineMesh.geometry.vertices[0]);
-
-
-          // at this to the update function
-          // iterate over this
-          // set next item to equal amount
 
           // for (var i = 0; i < 100; i++) {
           //   var lineMesh = new THREE.Line( lineGeometry, lineMaterial );
@@ -261,12 +179,30 @@
           // // chinLine = new THREE.Line( chinGeometry, lineMaterial );
           // // scene.add( chinLine );
 
+          for(let i = 0; i<71; i++){
+            var numberCanvas = document.createElement('canvas');
+            numberCanvas.width = 256;
+            numberCanvas.height = 128;
+            let numberContext = numberCanvas.getContext('2d');
+            numberContext.font = "90px Arial";
+            numberContextArray.push( numberContext )
+
+            let numberTexture = new THREE.Texture(numberCanvas)
+            numberTexture.width = 10;
+            numberTexture.height = 128;
+            numberTextureArray.push( numberTexture )
+
+            var textMaterial = new THREE.MeshBasicMaterial({ map: numberTexture });
+            textMaterial.transparent = true;
+
+            let mesh1 = new THREE.Mesh(
+                new THREE.PlaneGeometry(10, 5),
+                textMaterial
+              );
+            numberMeshArray.push( mesh1 )
+            scene.add( mesh1 )
+          }
         }
-
-
-        // copy last position of geometry
-        // animate fade out and removal from screen
-
 
         function onWindowResize() {
           camera.aspect = window.innerWidth / window.innerHeight;
@@ -274,46 +210,40 @@
           renderer.setSize( window.innerWidth, window.innerHeight );
         }
 
-        // function getPositionGlobal() {
-        //   let positions = ctracker.getCurrentPosition();
-        //   return positions;
-        // }
+
+
+
+
 
         function animate() {
-
-          // getPositionGlobal();
-
           let positions = ctracker.getCurrentPosition();
-
-
-
-
           // setInterval(function() {
           //   console.log('test');
           // }, 1000);
 
-          // console.log(video.width);
           requestAnimationFrame( animate );
           TWEEN.update();
 
-          // let positions = ctracker.getCurrentPosition();
-
-          // console.log(lineMesh.geometry.vertices[0]);
-          lineMesh.geometry.vertices[0] = {x: positions[0][0], y: 20, z: 0}
-          lineMesh.geometry.vertices[1] = {x: 200, y: 200, z: 0}
-          // lineMesh.geometry.vertices[0] = {x: positions[0][0], y: positions[0][1], z: 0}
-          // lineMesh.geometry.vertices[1] = {x: positions[1][1], y: positions[1][2], z: 0}
-          console.log(lineMesh.geometry.vertices[0]);
-          // console.log(positions[0][0]);
-          // console.log(positions[i][0]);
+            // for(let i = 0; i < 40; i++) {
+            //   if(i%2 === 0) {
+            //     lineMesh.geometry.vertices[i] = {x: -(positions[0][0] -185), y: -(positions[0][1] -155), z: 0};;
+            //   } else {
+            //     lineMesh.geometry.vertices[i] = {x: -(positions[i][0] -185), y: -(positions[i][1] -155), z: 0};
+            //   }
+            // }
+            // console.log(lineMesh.geometry.vertices.length);
           // lineMesh.geometry.verticesNeedUpdate = true;
-          lineMesh.geometry.verticesNeedupdate = true;
+          // console.log(lineMesh.geometry);
 
           for (let i = 0; i < cubeMeshArray.length; i++) {
-            // console.log(lineMesh.geometry.vertices[1]);
-            // console.log(positions[0][0]);
-              let currentX = cubeMeshArray[i].position.x = - (positions[i][0] -185);
-              let currentY = cubeMeshArray[i].position.y = - (positions[i][1] -155);
+
+              let currentX = cubeMeshArray[i].position.x = -(positions[i][0] -185);
+              let currentY = cubeMeshArray[i].position.y = -(positions[i][1] -155);
+
+              numberContextArray[i].fillText(i, 0, 120);
+              numberMeshArray[i].position.set(-(positions[i][0] -185), -(positions[i][1] -155), -5);
+              numberTextureArray[i].needsUpdate = true;
+
               // run through each point and draw a line for each
               // console.log(lineMesh.geometry.vertices.length);
               // console.log(lineMesh.geometry.vertices[i].x);
@@ -333,8 +263,6 @@
               // }
               // lineMeshArray[i].geometry.verticesNeedUpdate = true;
   				}
-          // console.log(lineMeshArray[0].geometry.vertices.length);
-
 
           // for (let p = 0; p < 17; p++) {
           //   if(p < 15){
@@ -365,14 +293,8 @@
 		</div>
     <canvas width="11px" height="781px" id="renderCanvas" style="display:none;"></canvas>
 
-<!-- make face bigger -->
-<!-- make those vectors -->
 
-<!-- choose two points in the array and draw a line -->
-<!-- choose random points from array -->
-<!-- get first vertext -->
-<!-- make more lines from that vertex, to another -->
-
+    <!-- draw vertices -->
 
 
 
