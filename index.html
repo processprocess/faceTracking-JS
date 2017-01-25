@@ -230,11 +230,8 @@
 
       function animate() {
 
-        //
-
         let positions = ctracker.getCurrentPosition();
         requestAnimationFrame( animate );
-
 
         //
         //FACE MESHES
@@ -696,10 +693,8 @@
           //
         }
 
-        // console.log(faceMesh.geometry.vertices.length);
         faceMesh.geometry.verticesNeedUpdate = true;
         faceMesh.geometry.__dirtyVertices = true;
-        // console.log(faceMesh.geometry.faces[1]);
 
         //
 
@@ -717,11 +712,11 @@
 
         for (let i = 0; i < cubeMeshArray.length; i++) {
 
-          // DOTS
+          // // DOTS
           // let currentX = cubeMeshArray[i].position.x = -(positions[i][0] -185);
           // let currentY = cubeMeshArray[i].position.y = -(positions[i][1] -155);
 
-          // NUMBERS
+          // // NUMBERS
           // numberContextArray[i].fillText(i, 0, 120);
           // numberMeshArray[i].position.set(-(positions[i][0] -185), -(positions[i][1] -155), -5);
           // numberTextureArray[i].needsUpdate = true;
@@ -746,10 +741,6 @@
       }
 
     </script>
-
-		<!-- </div> -->
-    <!-- <canvas width="11px" height="781px" id="renderCanvas" style="display:none;"></canvas> -->
-
 
     <!-- draw vertices all over face -->
     <!-- work in physics?? -->
