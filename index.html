@@ -74,6 +74,8 @@
 
       let faceMesh;
 
+      let squareMesh;
+
       //
 
       begin();
@@ -88,12 +90,8 @@
 
         scene = new THREE.Scene();
 
-        // let light = new THREE.PointLight(0xffffff);
-        // light.position.set( -100, 200, 100 );
-        // scene.add( light );
 
-        var light = new THREE.AmbientLight( 0x404040 ); // soft white light
-        scene.add( light );
+
 
         let threeContainer = document.getElementById( 'canvasForThree' );
 
@@ -170,6 +168,93 @@
           scene.add( mesh1 )
         }
 
+
+
+        //
+        // LIGHTS
+        //
+
+        // let light = new THREE.PointLight(0xffffff);
+        // light.position.set( -100, 200, 100 );
+        // scene.add( light );
+
+        // var light = new THREE.AmbientLight( 0xffffff ); // soft white light
+        // scene.add( light );
+
+        var pointLight = new THREE.PointLight( 0xffffff, 2, 0, 1 );
+        pointLight.position.set( 0 , -20, 10 );
+        scene.add( pointLight );
+
+        var sphereSize = 1;
+        var pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize );
+        scene.add( pointLightHelper );
+
+        // spotLight = new THREE.SpotLight( 0x000000, 0.8 );
+        // spotLight.position.set( 0, 0, 230 );
+        // // spotLight.angle = Math.PI / 9; //narrow focus
+        // // spotLight.angle = Math.PI / 5; //wide focus
+        // // spotLight.penumbra = 0.8; //soft edge
+        // // spotLight.penumbra = 0; //sharp edge
+        // scene.add( spotLight );
+
+        // let lightCubeGeo = new THREE.BoxGeometry(10,10,10);
+        // let lightCubeMaterial = new THREE.MeshPhongMaterial({
+        //   color: 0xff0000,
+        //   side: THREE.DoubleSide
+        // });
+        // let lightCubeMesh = new THREE.Mesh( lightCubeGeo, lightCubeMaterial );
+        // lightCubeMesh.position.set(0,0,0)
+        // scene.add( lightCubeMesh );
+        //
+        //
+        // let squareGeometry = new THREE.Geometry();
+        // squareGeometry.vertices.push(new THREE.Vector3( 0, 0, 0 ));
+        // squareGeometry.vertices.push(new THREE.Vector3( 0, 10, 0 ));
+        // squareGeometry.vertices.push(new THREE.Vector3( 10, 10, 0 ));
+        // squareGeometry.vertices.push(new THREE.Vector3( 10, 0, 0 ));
+        // squareGeometry.faces.push(new THREE.Face3( 0, 1, 2 ))
+        // squareGeometry.faces.push(new THREE.Face3( 2, 3, 0 ))
+        //
+        // // squareGeometry.faces[0].vertexColors[0] = new THREE.Color( 0xFF0000 );
+        // // squareGeometry.faces[0].vertexColors[1] = new THREE.Color( 0x00FF00 );
+        // // squareGeometry.faces[0].vertexColors[2] = new THREE.Color( 0x0000FF );
+        //
+        // let squareMaterial = new THREE.MeshPhongMaterial({
+        //   color: 0xFF0000,
+        //   vertexColors: THREE.VertexColors,
+        //   side: THREE.DoubleSide
+        //   // wireframe: true
+        // });
+
+        // squareMesh = new THREE.Mesh( squareGeometry, squareMaterial );
+        // squareMesh.position.set( 10, 10, 0 )
+        // scene.add( squareMesh )
+        //
+        //
+        //
+        // /* Compute normals */
+        // squareMesh.geometry.computeFaceNormals();
+        // squareMesh.geometry.computeVertexNormals();
+        //
+        // /* Next 3 lines seems not to be mandatory */
+        // squareMesh.geometry.dynamic = true
+        // squareMesh.geometry.__dirtyVertices = true;
+        // squareMesh.geometry.__dirtyNormals = true;
+        //
+        // squareMesh.flipSided = true;
+        // squareMesh.doubleSided = true;
+        //
+        // /* Flip normals*/
+        // for(var i = 0; i<squareMesh.geometry.faces.length; i++) {
+        //     squareMesh.geometry.faces[i].normal.x = -1*squareMesh.geometry.faces[i].normal.x;
+        //     squareMesh.geometry.faces[i].normal.y = -1*squareMesh.geometry.faces[i].normal.y;
+        //     squareMesh.geometry.faces[i].normal.z = -1*squareMesh.geometry.faces[i].normal.z;
+        // }
+
+
+
+
+
         //
         // FACE GEOMETRIES
         //
@@ -183,12 +268,12 @@
           faceGeometry.faces.push(new THREE.Face3( i, i+1, i+2 ));
         }
 
-        // BLUE WIREFRAME
-        let faceMaterial = new THREE.MeshBasicMaterial({
-          color: 0x0000FF,
-          side: THREE.DoubleSide,
-          wireframe: true
-        });
+        // // BLUE WIREFRAME
+        // let faceMaterial = new THREE.MeshBasicMaterial({
+        //   color: 0x0000FF,
+        //   side: THREE.DoubleSide,
+        //   wireframe: true
+        // });
 
         // // RAINBOW VERTICES
         // for(let i = 0; i < 111; i+=1 ) {
@@ -210,10 +295,38 @@
         //   side: THREE.DoubleSide
         // });
 
+        // SOLID BLUE
+        let faceMaterial = new THREE.MeshPhongMaterial({
+          color: 0x0000ff
+          // wireframe: true
+          // side: THREE.DoubleSide
+        });
+
         //
 
         faceMesh = new THREE.Mesh( faceGeometry, faceMaterial );
         scene.add( faceMesh );
+
+        //
+        /* COMPUTE NORMALS */
+          faceMesh.geometry.computeFaceNormals();
+          faceMesh.geometry.computeVertexNormals();
+
+          /* Next 3 lines seems not to be mandatory */
+          faceMesh.geometry.dynamic = true
+          faceMesh.geometry.__dirtyVertices = true;
+          faceMesh.geometry.__dirtyNormals = true;
+
+          faceMesh.flipSided = true;
+          faceMesh.doubleSided = true;
+
+          /* Flip normals*/
+          for(var i = 0; i<faceMesh.geometry.faces.length; i++) {
+              faceMesh.geometry.faces[i].normal.x = -1*faceMesh.geometry.faces[i].normal.x;
+              faceMesh.geometry.faces[i].normal.y = -1*faceMesh.geometry.faces[i].normal.y;
+              faceMesh.geometry.faces[i].normal.z = -1*faceMesh.geometry.faces[i].normal.z;
+          }
+
 
         console.log(faceMesh.geometry.faces[0].color);
         // console.log(faceMesh.material.faces[0].color);
@@ -242,455 +355,455 @@
           faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
           faceMesh.geometry.vertices[++vert].set(-(positions[2][0] -185), -(positions[2][1] -155), -5);
           //
-          faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[1][0] -185), -(positions[1][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[2][0] -185), -(positions[2][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[1][0] -185), -(positions[1][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[65][0] -185), -(positions[65][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[65][0] -185), -(positions[65][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[33][0] -185), -(positions[33][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[1][0] -185), -(positions[1][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[0][0] -185), -(positions[0][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[1][0] -185), -(positions[1][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[66][0] -185), -(positions[66][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[1][0] -185), -(positions[1][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[66][0] -185), -(positions[66][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[0][0] -185), -(positions[0][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[19][0] -185), -(positions[19][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[15][0] -185), -(positions[15][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[67][0] -185), -(positions[67][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[16][0] -185), -(positions[16][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[15][0] -185), -(positions[15][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[67][0] -185), -(positions[67][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[16][0] -185), -(positions[16][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[29][0] -185), -(positions[29][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[67][0] -185), -(positions[67][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[16][0] -185), -(positions[16][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[29][0] -185), -(positions[29][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[17][0] -185), -(positions[17][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[64][0] -185), -(positions[64][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[21][0] -185), -(positions[21][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[24][0] -185), -(positions[24][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[64][0] -185), -(positions[64][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[21][0] -185), -(positions[21][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[22][0] -185), -(positions[22][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[64][0] -185), -(positions[64][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[22][0] -185), -(positions[22][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[33][0] -185), -(positions[33][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[22][0] -185), -(positions[22][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[2][0] -185), -(positions[2][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[3][0] -185), -(positions[3][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[4][0] -185), -(positions[4][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[3][0] -185), -(positions[3][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[4][0] -185), -(positions[4][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[5][0] -185), -(positions[5][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[55][0] -185), -(positions[55][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[5][0] -185), -(positions[5][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[6][0] -185), -(positions[6][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[55][0] -185), -(positions[55][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[5][0] -185), -(positions[5][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[6][0] -185), -(positions[6][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[55][0] -185), -(positions[55][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[6][0] -185), -(positions[6][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[7][0] -185), -(positions[7][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[53][0] -185), -(positions[53][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[7][0] -185), -(positions[7][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[45][0] -185), -(positions[45][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[45][0] -185), -(positions[45][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[47][0] -185), -(positions[47][1] -155), -5);
-
-          // LEFT CHEECK
-          faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[12][0] -185), -(positions[12][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[12][0] -185), -(positions[12][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[69][0] -185), -(positions[69][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[69][0] -185), -(positions[69][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[33][0] -185), -(positions[33][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[14][0] -185), -(positions[14][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[14][0] -185), -(positions[14][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[70][0] -185), -(positions[70][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[70][0] -185), -(positions[70][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[15][0] -185), -(positions[15][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[14][0] -185), -(positions[14][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[19][0] -185), -(positions[19][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[63][0] -185), -(positions[63][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[20][0] -185), -(positions[20][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[19][0] -185), -(positions[19][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[63][0] -185), -(positions[63][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[20][0] -185), -(positions[20][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[24][0] -185), -(positions[24][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[63][0] -185), -(positions[63][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[20][0] -185), -(positions[20][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[21][0] -185), -(positions[21][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[24][0] -185), -(positions[24][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[68][0] -185), -(positions[68][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[29][0] -185), -(positions[29][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[17][0] -185), -(positions[17][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[68][0] -185), -(positions[68][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[18][0] -185), -(positions[18][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[17][0] -185), -(positions[17][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[68][0] -185), -(positions[68][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[18][0] -185), -(positions[18][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[33][0] -185), -(positions[33][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[18][0] -185), -(positions[18][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[11][0] -185), -(positions[11][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[12][0] -185), -(positions[12][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[11][0] -185), -(positions[11][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[10][0] -185), -(positions[10][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[9][0] -185), -(positions[9][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[10][0] -185), -(positions[10][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[9][0] -185), -(positions[9][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[51][0] -185), -(positions[51][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[8][0] -185), -(positions[8][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[9][0] -185), -(positions[9][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[51][0] -185), -(positions[51][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[8][0] -185), -(positions[8][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[51][0] -185), -(positions[51][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[8][0] -185), -(positions[8][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[7][0] -185), -(positions[7][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[53][0] -185), -(positions[53][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[7][0] -185), -(positions[7][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[49][0] -185), -(positions[49][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[49][0] -185), -(positions[49][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[47][0] -185), -(positions[47][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
-
-          // TOP LIP - RIGHT
-          faceMesh.geometry.vertices[++vert].set(-(positions[47][0] -185), -(positions[47][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[60][0] -185), -(positions[60][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[61][0] -185), -(positions[61][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[60][0] -185), -(positions[60][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[61][0] -185), -(positions[61][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[45][0] -185), -(positions[45][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[61][0] -185), -(positions[61][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[45][0] -185), -(positions[45][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
-
-          // TOP LIP - LEFT
-          faceMesh.geometry.vertices[++vert].set(-(positions[47][0] -185), -(positions[47][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[60][0] -185), -(positions[60][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[59][0] -185), -(positions[59][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[60][0] -185), -(positions[60][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[59][0] -185), -(positions[59][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[49][0] -185), -(positions[49][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[59][0] -185), -(positions[59][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[49][0] -185), -(positions[49][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
-
-          // BOTTOM LIP - RIGHT
-          faceMesh.geometry.vertices[++vert].set(-(positions[57][0] -185), -(positions[57][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[53][0] -185), -(positions[53][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[57][0] -185), -(positions[57][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[56][0] -185), -(positions[56][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[55][0] -185), -(positions[55][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[56][0] -185), -(positions[56][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[55][0] -185), -(positions[55][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[56][0] -185), -(positions[56][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
-
-          // BOTTOM LIP - LEFT
-          faceMesh.geometry.vertices[++vert].set(-(positions[57][0] -185), -(positions[57][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[53][0] -185), -(positions[53][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[57][0] -185), -(positions[57][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[58][0] -185), -(positions[58][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[51][0] -185), -(positions[51][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[58][0] -185), -(positions[58][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[51][0] -185), -(positions[51][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[58][0] -185), -(positions[58][1] -155), -5);
-
-          // NOSE - RIGHT
-          faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[42][0] -185), -(positions[42][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[42][0] -185), -(positions[42][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[42][0] -185), -(positions[42][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[42][0] -185), -(positions[42][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[42][0] -185), -(positions[42][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
-
-          // NOSE - LEFT
-          faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[43][0] -185), -(positions[43][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[43][0] -185), -(positions[43][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[43][0] -185), -(positions[43][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[43][0] -185), -(positions[43][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[43][0] -185), -(positions[43][1] -155), -5);
-
-          // EYE - RIGHT
-          faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[64][0] -185), -(positions[64][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[24][0] -185), -(positions[24][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[64][0] -185), -(positions[64][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[24][0] -185), -(positions[24][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[63][0] -185), -(positions[63][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[63][0] -185), -(positions[63][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[66][0] -185), -(positions[66][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[66][0] -185), -(positions[66][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[65][0] -185), -(positions[65][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[65][0] -185), -(positions[65][1] -155), -5);
-
-          // EYE - LEFT
-          faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[68][0] -185), -(positions[68][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[29][0] -185), -(positions[29][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[68][0] -185), -(positions[68][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[29][0] -185), -(positions[29][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[67][0] -185), -(positions[67][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[67][0] -185), -(positions[67][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[70][0] -185), -(positions[70][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[70][0] -185), -(positions[70][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[69][0] -185), -(positions[69][1] -155), -5);
-          //
-          faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
-          faceMesh.geometry.vertices[++vert].set(-(positions[69][0] -185), -(positions[69][1] -155), -5);
-          //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[1][0] -185), -(positions[1][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[2][0] -185), -(positions[2][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[1][0] -185), -(positions[1][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[65][0] -185), -(positions[65][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[65][0] -185), -(positions[65][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[33][0] -185), -(positions[33][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[1][0] -185), -(positions[1][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[0][0] -185), -(positions[0][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[1][0] -185), -(positions[1][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[66][0] -185), -(positions[66][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[1][0] -185), -(positions[1][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[66][0] -185), -(positions[66][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[0][0] -185), -(positions[0][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[19][0] -185), -(positions[19][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[15][0] -185), -(positions[15][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[67][0] -185), -(positions[67][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[16][0] -185), -(positions[16][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[15][0] -185), -(positions[15][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[67][0] -185), -(positions[67][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[16][0] -185), -(positions[16][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[29][0] -185), -(positions[29][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[67][0] -185), -(positions[67][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[16][0] -185), -(positions[16][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[29][0] -185), -(positions[29][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[17][0] -185), -(positions[17][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[64][0] -185), -(positions[64][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[21][0] -185), -(positions[21][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[24][0] -185), -(positions[24][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[64][0] -185), -(positions[64][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[21][0] -185), -(positions[21][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[22][0] -185), -(positions[22][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[64][0] -185), -(positions[64][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[22][0] -185), -(positions[22][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[33][0] -185), -(positions[33][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[22][0] -185), -(positions[22][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[2][0] -185), -(positions[2][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[3][0] -185), -(positions[3][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[4][0] -185), -(positions[4][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[3][0] -185), -(positions[3][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[4][0] -185), -(positions[4][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[5][0] -185), -(positions[5][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[55][0] -185), -(positions[55][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[5][0] -185), -(positions[5][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[6][0] -185), -(positions[6][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[55][0] -185), -(positions[55][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[5][0] -185), -(positions[5][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[6][0] -185), -(positions[6][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[55][0] -185), -(positions[55][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[6][0] -185), -(positions[6][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[7][0] -185), -(positions[7][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[53][0] -185), -(positions[53][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[7][0] -185), -(positions[7][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[45][0] -185), -(positions[45][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[45][0] -185), -(positions[45][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[47][0] -185), -(positions[47][1] -155), -5);
+          //
+          // // LEFT CHEECK
+          // faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[12][0] -185), -(positions[12][1] -155), -20);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -14);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[12][0] -185), -(positions[12][1] -155), -20);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -14);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[69][0] -185), -(positions[69][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[69][0] -185), -(positions[69][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[33][0] -185), -(positions[33][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -14);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[14][0] -185), -(positions[14][1] -155), -14);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -14);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[14][0] -185), -(positions[14][1] -155), -14);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -14);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[70][0] -185), -(positions[70][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[13][0] -185), -(positions[13][1] -155), -14);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[70][0] -185), -(positions[70][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[15][0] -185), -(positions[15][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[14][0] -185), -(positions[14][1] -155), -14);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[19][0] -185), -(positions[19][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[63][0] -185), -(positions[63][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[20][0] -185), -(positions[20][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[19][0] -185), -(positions[19][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[63][0] -185), -(positions[63][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[20][0] -185), -(positions[20][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[24][0] -185), -(positions[24][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[63][0] -185), -(positions[63][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[20][0] -185), -(positions[20][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[21][0] -185), -(positions[21][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[24][0] -185), -(positions[24][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[68][0] -185), -(positions[68][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[29][0] -185), -(positions[29][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[17][0] -185), -(positions[17][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[68][0] -185), -(positions[68][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[18][0] -185), -(positions[18][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[17][0] -185), -(positions[17][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[68][0] -185), -(positions[68][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[18][0] -185), -(positions[18][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[33][0] -185), -(positions[33][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[18][0] -185), -(positions[18][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[11][0] -185), -(positions[11][1] -155), -14);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[12][0] -185), -(positions[12][1] -155), -20);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[11][0] -185), -(positions[11][1] -155), -14);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[10][0] -185), -(positions[10][1] -155), -12);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[9][0] -185), -(positions[9][1] -155), -12);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[10][0] -185), -(positions[10][1] -155), -12);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[9][0] -185), -(positions[9][1] -155), -12);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[51][0] -185), -(positions[51][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[8][0] -185), -(positions[8][1] -155), -10);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[9][0] -185), -(positions[9][1] -155), -12);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[51][0] -185), -(positions[51][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[8][0] -185), -(positions[8][1] -155), -10);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[51][0] -185), -(positions[51][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[8][0] -185), -(positions[8][1] -155), -10);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[7][0] -185), -(positions[7][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[53][0] -185), -(positions[53][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[7][0] -185), -(positions[7][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[49][0] -185), -(positions[49][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[49][0] -185), -(positions[49][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[47][0] -185), -(positions[47][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
+          //
+          // // TOP LIP - RIGHT
+          // faceMesh.geometry.vertices[++vert].set(-(positions[47][0] -185), -(positions[47][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[60][0] -185), -(positions[60][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[61][0] -185), -(positions[61][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[60][0] -185), -(positions[60][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[61][0] -185), -(positions[61][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[45][0] -185), -(positions[45][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[46][0] -185), -(positions[46][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[61][0] -185), -(positions[61][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[45][0] -185), -(positions[45][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
+          //
+          // // TOP LIP - LEFT
+          // faceMesh.geometry.vertices[++vert].set(-(positions[47][0] -185), -(positions[47][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[60][0] -185), -(positions[60][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[59][0] -185), -(positions[59][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[60][0] -185), -(positions[60][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[59][0] -185), -(positions[59][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[49][0] -185), -(positions[49][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[48][0] -185), -(positions[48][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[59][0] -185), -(positions[59][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[49][0] -185), -(positions[49][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
+          //
+          // // BOTTOM LIP - RIGHT
+          // faceMesh.geometry.vertices[++vert].set(-(positions[57][0] -185), -(positions[57][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[53][0] -185), -(positions[53][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[57][0] -185), -(positions[57][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[56][0] -185), -(positions[56][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[55][0] -185), -(positions[55][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[54][0] -185), -(positions[54][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[56][0] -185), -(positions[56][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[55][0] -185), -(positions[55][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[56][0] -185), -(positions[56][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
+          //
+          // // BOTTOM LIP - LEFT
+          // faceMesh.geometry.vertices[++vert].set(-(positions[57][0] -185), -(positions[57][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[53][0] -185), -(positions[53][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[57][0] -185), -(positions[57][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[58][0] -185), -(positions[58][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[51][0] -185), -(positions[51][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[52][0] -185), -(positions[52][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[58][0] -185), -(positions[58][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[51][0] -185), -(positions[51][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[50][0] -185), -(positions[50][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[58][0] -185), -(positions[58][1] -155), -5);
+          //
+          // // NOSE - RIGHT
+          // faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[42][0] -185), -(positions[42][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[42][0] -185), -(positions[42][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[34][0] -185), -(positions[34][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[42][0] -185), -(positions[42][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[42][0] -185), -(positions[42][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[36][0] -185), -(positions[36][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[42][0] -185), -(positions[42][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
+          //
+          // // NOSE - LEFT
+          // faceMesh.geometry.vertices[++vert].set(-(positions[41][0] -185), -(positions[41][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[43][0] -185), -(positions[43][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[40][0] -185), -(positions[40][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[43][0] -185), -(positions[43][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[39][0] -185), -(positions[39][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[43][0] -185), -(positions[43][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[38][0] -185), -(positions[38][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[43][0] -185), -(positions[43][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[62][0] -185), -(positions[62][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[37][0] -185), -(positions[37][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[43][0] -185), -(positions[43][1] -155), -5);
+          //
+          // // EYE - RIGHT
+          // faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[64][0] -185), -(positions[64][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[24][0] -185), -(positions[24][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[64][0] -185), -(positions[64][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[24][0] -185), -(positions[24][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[63][0] -185), -(positions[63][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[63][0] -185), -(positions[63][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[23][0] -185), -(positions[23][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[66][0] -185), -(positions[66][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[66][0] -185), -(positions[66][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[26][0] -185), -(positions[26][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[65][0] -185), -(positions[65][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[25][0] -185), -(positions[25][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[27][0] -185), -(positions[27][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[65][0] -185), -(positions[65][1] -155), -5);
+          //
+          // // EYE - LEFT
+          // faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[68][0] -185), -(positions[68][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[29][0] -185), -(positions[29][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[68][0] -185), -(positions[68][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[29][0] -185), -(positions[29][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[67][0] -185), -(positions[67][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[67][0] -185), -(positions[67][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[28][0] -185), -(positions[28][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[70][0] -185), -(positions[70][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[70][0] -185), -(positions[70][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[31][0] -185), -(positions[31][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[69][0] -185), -(positions[69][1] -155), -5);
+          // //
+          // faceMesh.geometry.vertices[++vert].set(-(positions[32][0] -185), -(positions[32][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[30][0] -185), -(positions[30][1] -155), -5);
+          // faceMesh.geometry.vertices[++vert].set(-(positions[69][0] -185), -(positions[69][1] -155), -5);
+          // //
         }
 
         faceMesh.geometry.verticesNeedUpdate = true;
