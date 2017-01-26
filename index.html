@@ -34,6 +34,38 @@
     <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 	</head>
 	<body>
+    <!-- ---------------- Custom Shader Code ------------------------ -->
+    <script id="vertexShader" type="x-shader/x-vertex">
+    varying vec2 vUv;
+    void main()
+    {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+    }
+    </script>
+
+    <!-- fragment shader a.k.a. pixel shader -->
+    <script id="fragmentShader" type="x-shader/x-vertex">
+    uniform sampler2D baseTexture;
+    uniform float baseSpeed;
+    uniform sampler2D noiseTexture;
+    uniform float noiseScale;
+    uniform float alpha;
+    uniform float time;
+
+    varying vec2 vUv;
+    void main()
+    {
+    	vec2 uvTimeShift = vUv + vec2( -0.7, 1.5 ) * time * baseSpeed;
+    	vec4 noiseGeneratorTimeShift = texture2D( noiseTexture, uvTimeShift );
+    	vec2 uvNoiseTimeShift = vUv + noiseScale * vec2( noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b );
+    	vec4 baseColor = texture2D( baseTexture, uvNoiseTimeShift );
+
+    	baseColor.a = alpha;
+    	gl_FragColor = baseColor;
+    }
+    </script>
+    <!-- ----------------------------------------------------------- -->
     <h2>FACE_LAB</h2>
 
     <video id="video" width="368"  height="288" autoplay="" loop=""></video>
@@ -62,19 +94,21 @@
       ctracker.start(videoInput);
 
       //
+
       let cubeMeshArray = [];
-
       let scene, renderer, camera;
-
       let lineMesh;
-
       let numberContextArray = [];
       let numberMeshArray = [];
       let numberTextureArray = [];
-
       let faceMesh;
-
       let squareMesh;
+      let testCubeMesh;
+      let multiPlaying = false;
+
+      let clock = new THREE.Clock();
+      let triangleMesh;
+      let customUniforms;
 
       //
 
@@ -84,194 +118,117 @@
       //
 
       function begin(){
-
+        // SETUP
         camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
-        camera.position.z = 200;
+          camera.position.z = 200;
+          scene = new THREE.Scene();
+          let threeContainer = document.getElementById( 'canvasForThree' );
+          renderer = new THREE.WebGLRenderer({ antialias: true });
+          renderer.setPixelRatio( window.devicePixelRatio );
+          renderer.setSize( window.innerWidth, window.innerHeight );
+          threeContainer.appendChild( renderer.domElement );
+          // renderer.setClearColor( 0xFFFFFF, 1);
+          renderer.setClearColor( 0x333F47, 0.4);
+          controls = new THREE.OrbitControls( camera, renderer.domElement );
+          controls.enablePan = true;
+          controls.enableZoom = true;
+          controls.enableRotate = true;
+          controls.enableDamping = true;
+          window.addEventListener( 'resize', onWindowResize, false );
 
-        scene = new THREE.Scene();
+        // // FACE CONTAINER AND DOTS
+          // let faceContainerGeometry = new THREE.BoxGeometry( 0.0, 0.0, 0.0 );
+          // let faceContainerMaterial = new THREE.MeshLambertMaterial({
+          //   color: 0xFF0000
+          // });
+          // let faceContainerMesh = new THREE.Mesh( faceContainerGeometry, faceContainerMaterial );
+          //
+          // let cubeGeometry = new THREE.BoxGeometry(.5,.5,.5);
+          // let cubeMaterial = new THREE.MeshLambertMaterial({
+          //   color: 0x0000FF
+          // });
+          //
+          // for (let i = 0; i < 71; i++) {
+  				// 	let cubeMesh = new THREE.Mesh( cubeGeometry, cubeMaterial );
+          //   cubeMeshArray.push( cubeMesh );
+          //   faceContainerMesh.add( cubeMesh );
+  				// }
+          // faceContainerMesh.position.set(0, 0, 0);
+          // scene.add( faceContainerMesh );
 
-
-
-
-        let threeContainer = document.getElementById( 'canvasForThree' );
-
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        threeContainer.appendChild( renderer.domElement );
-        // renderer.setClearColor( 0xFFFFFF, 1);
-        renderer.setClearColor( 0x333F47, 0.4);
-
-        controls = new THREE.OrbitControls( camera, renderer.domElement );
-        controls.enablePan = true;
-        controls.enableZoom = true;
-        controls.enableRotate = true;
-        controls.enableDamping = true;
-
-        window.addEventListener( 'resize', onWindowResize, false );
-
-        //
-        //FACE CONTAINER
-        let faceContainerGeometry = new THREE.BoxGeometry( 0.0, 0.0, 0.0 );
-        let faceContainerMaterial = new THREE.MeshLambertMaterial({
-          color: 0xFF0000
-        });
-        let faceContainerMesh = new THREE.Mesh( faceContainerGeometry, faceContainerMaterial );
-
-        let cubeGeometry = new THREE.BoxGeometry(.5,.5,.5);
-        let cubeMaterial = new THREE.MeshLambertMaterial({
-          color: 0x0000FF
-        });
-
-        for (let i = 0; i < 71; i++) {
-					let cubeMesh = new THREE.Mesh( cubeGeometry, cubeMaterial );
-          cubeMeshArray.push( cubeMesh );
-          faceContainerMesh.add( cubeMesh );
-				}
-        faceContainerMesh.position.set(0, 0, 0);
-        scene.add( faceContainerMesh );
-
-        //
         // // LINES FROM ONE VERTEX
-        // let lineGeometry = new THREE.Geometry();
-        //
-        // let lineMaterial = new THREE.LineBasicMaterial({
-        //   color: 0x0000ff
-        // });
-        //
-        // lineMesh = new THREE.Line( lineGeometry, lineMaterial );
-        // scene.add( lineMesh );
+          // let lineGeometry = new THREE.Geometry();
+          //
+          // let lineMaterial = new THREE.LineBasicMaterial({
+          //   color: 0x0000ff
+          // });
+          //
+          // lineMesh = new THREE.Line( lineGeometry, lineMaterial );
+          // scene.add( lineMesh );
 
-        //
         // NUMBER GENERATOR
-        for(let i = 0; i<71; i++){
-          let numberCanvas = document.createElement('canvas');
-          numberCanvas.width = 256;
-          numberCanvas.height = 128;
-          let numberContext = numberCanvas.getContext('2d');
-          numberContext.font = "90px Arial";
-          numberContextArray.push( numberContext )
+          for(let i = 0; i<71; i++){
+            let numberCanvas = document.createElement('canvas');
+            numberCanvas.width = 256;
+            numberCanvas.height = 128;
+            let numberContext = numberCanvas.getContext('2d');
+            numberContext.font = "90px Arial";
+            numberContextArray.push( numberContext )
 
-          let numberTexture = new THREE.Texture(numberCanvas)
-          numberTexture.width = 10;
-          numberTexture.height = 128;
-          numberTextureArray.push( numberTexture )
+            let numberTexture = new THREE.Texture(numberCanvas)
+            numberTexture.width = 10;
+            numberTexture.height = 128;
+            numberTextureArray.push( numberTexture )
 
-          let textMaterial = new THREE.MeshBasicMaterial({ map: numberTexture });
-          textMaterial.transparent = true;
+            let textMaterial = new THREE.MeshBasicMaterial({ map: numberTexture });
+            textMaterial.transparent = true;
 
-          let mesh1 = new THREE.Mesh(
-              new THREE.PlaneGeometry(10, 5),
-              textMaterial
-            );
-          numberMeshArray.push( mesh1 )
-          scene.add( mesh1 )
-        }
-
-
+            let mesh1 = new THREE.Mesh(
+                new THREE.PlaneGeometry(10, 5),
+                textMaterial
+              );
+            numberMeshArray.push( mesh1 )
+            scene.add( mesh1 )
+          }
 
         //
         // LIGHTS
         //
 
-        // let light = new THREE.PointLight(0xffffff);
-        // light.position.set( -100, 200, 100 );
+        // // AMBIENT LIGHT - white
+        // let light = new THREE.AmbientLight( 0xffffff );
         // scene.add( light );
 
-        // var light = new THREE.AmbientLight( 0xffffff ); // soft white light
-        // scene.add( light );
+        // CENTER TOP LIGHT - white
+        let pointLightTop = new THREE.PointLight( 0xffffff, 2, 0, 1 );
+        pointLightTop.position.set( 0 , 30, 20 );
+        scene.add( pointLightTop );
+        let sphereSize = 1;
+        let pointLightHelperTop = new THREE.PointLightHelper( pointLightTop, sphereSize );
+        scene.add( pointLightHelperTop );
 
-        // LEFT TOP LIGHT
-        var pointLightLeft = new THREE.PointLight( 0xff0000, 2, 0, 1 );
-        pointLightLeft.position.set( -40 , 30, 20 );
-        scene.add( pointLightLeft );
-        var sphereSize = 1;
-        var pointLightHelperLeft = new THREE.PointLightHelper( pointLightLeft, sphereSize );
-        scene.add( pointLightHelperLeft );
-
-        // RIGHT TOP LIGHT
-        var pointLight = new THREE.PointLight( 0x0000ff, 2, 0, 1 );
-        pointLight.position.set( 40 , 30, 20 );
-        scene.add( pointLight );
-        var sphereSize = 1;
-        var pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize );
-        scene.add( pointLightHelper );
-
-
-
-
-        // spotLight = new THREE.SpotLight( 0x000000, 0.8 );
-        // spotLight.position.set( 0, 0, 230 );
-        // // spotLight.angle = Math.PI / 9; //narrow focus
-        // // spotLight.angle = Math.PI / 5; //wide focus
-        // // spotLight.penumbra = 0.8; //soft edge
-        // // spotLight.penumbra = 0; //sharp edge
-        // scene.add( spotLight );
-
-        // let lightCubeGeo = new THREE.BoxGeometry(10,10,10);
-        // let lightCubeMaterial = new THREE.MeshPhongMaterial({
-        //   color: 0xff0000,
-        //   side: THREE.DoubleSide
-        // });
-        // let lightCubeMesh = new THREE.Mesh( lightCubeGeo, lightCubeMaterial );
-        // lightCubeMesh.position.set(50,0,0)
-        // scene.add( lightCubeMesh );
+        // // LEFT TOP LIGHT - red
+        // let pointLightLeft = new THREE.PointLight( 0xff0000, 2, 0, 1 );
+        // pointLightLeft.position.set( -40 , 30, 20 );
+        // scene.add( pointLightLeft );
+        // let sphereSize = 1;
+        // let pointLightHelperLeft = new THREE.PointLightHelper( pointLightLeft, sphereSize );
+        // scene.add( pointLightHelperLeft );
+        //
+        // // RIGHT TOP LIGHT - blue
+        // let pointLight = new THREE.PointLight( 0x0000ff, 2, 0, 1 );
+        // pointLight.position.set( 40 , 30, 20 );
+        // scene.add( pointLight );
+        // let sphereSize = 1;
+        // let pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize );
+        // scene.add( pointLightHelper );
 
         //
-        // let squareGeometry = new THREE.Geometry();
-        // squareGeometry.vertices.push(new THREE.Vector3( 0, 0, 0 ));
-        // squareGeometry.vertices.push(new THREE.Vector3( 0, 10, 0 ));
-        // squareGeometry.vertices.push(new THREE.Vector3( 10, 10, 0 ));
-        // squareGeometry.vertices.push(new THREE.Vector3( 10, 0, 0 ));
-        // squareGeometry.faces.push(new THREE.Face3( 0, 1, 2 ))
-        // squareGeometry.faces.push(new THREE.Face3( 2, 3, 0 ))
-        //
-        // // squareGeometry.faces[0].vertexColors[0] = new THREE.Color( 0xFF0000 );
-        // // squareGeometry.faces[0].vertexColors[1] = new THREE.Color( 0x00FF00 );
-        // // squareGeometry.faces[0].vertexColors[2] = new THREE.Color( 0x0000FF );
-        //
-        // let squareMaterial = new THREE.MeshPhongMaterial({
-        //   color: 0xFF0000,
-        //   vertexColors: THREE.VertexColors,
-        //   side: THREE.DoubleSide
-        //   // wireframe: true
-        // });
-
-        // squareMesh = new THREE.Mesh( squareGeometry, squareMaterial );
-        // squareMesh.position.set( 10, 10, 0 )
-        // scene.add( squareMesh )
-        //
-        //
-        //
-        // /* Compute normals */
-        // squareMesh.geometry.computeFaceNormals();
-        // squareMesh.geometry.computeVertexNormals();
-        //
-        // /* Next 3 lines seems not to be mandatory */
-        // squareMesh.geometry.dynamic = true
-        // squareMesh.geometry.__dirtyVertices = true;
-        // squareMesh.geometry.__dirtyNormals = true;
-        //
-        // squareMesh.flipSided = true;
-        // squareMesh.doubleSided = true;
-        //
-        // /* Flip normals*/
-        // for(var i = 0; i<squareMesh.geometry.faces.length; i++) {
-        //     squareMesh.geometry.faces[i].normal.x = -1*squareMesh.geometry.faces[i].normal.x;
-        //     squareMesh.geometry.faces[i].normal.y = -1*squareMesh.geometry.faces[i].normal.y;
-        //     squareMesh.geometry.faces[i].normal.z = -1*squareMesh.geometry.faces[i].normal.z;
-        // }
-
-
-
-
-
-        //
-        // FACE GEOMETRIES
+        // FACE
         //
 
+        // GENERATE FACE GEOS
         let faceGeometry = new THREE.Geometry();
-        // generate faces
         for(let i = 0; i < 330; i+=3 ) {
           faceGeometry.vertices.push(new THREE.Vector3( 0.0, 10.0, 0.0 ));
           faceGeometry.vertices.push(new THREE.Vector3( -10.0, -10.0, 0.0 ));
@@ -297,7 +254,7 @@
         //   side: THREE.DoubleSide
         // });
 
-        // // RONDOM COLOR PHONG
+        // // RANDOM COLOR PHONG
         // for(let i = 0; i < 110; i+=1 ) {
         //   faceGeometry.faces[ i ].color.setHex( Math.random() * 0xffffff );
         // }
@@ -306,28 +263,129 @@
         //   side: THREE.DoubleSide
         // });
 
-        // CHROME PHONG
-        let faceMaterial = new THREE.MeshPhongMaterial({
-          // color: 0xffffff,
-          // specular:0xffffff,
-          // envMap: envMap,
-          // combine: THREE.MultiplyOperation,
-          // shininess: 150,
-          // reflectivity: 1.0
-        });
-
         // // SOLID BLUE PHONG
         // let faceMaterial = new THREE.MeshPhongMaterial({
-        //   color: 0x0000ff
+        //   color: 0x0000ff,
+        //   vertexColors: THREE.FaceColors
         // });
 
+        // SOLID WHITE PHONG
+        let faceMaterial = new THREE.MeshPhongMaterial({
+          color: 0xFFFFFF,
+          vertexColors: THREE.FaceColors
+        });
+
+        // // CHROME PHONG
+        // let faceMaterial = new THREE.MeshPhongMaterial({
+        //   // color: 0xffffff,
+        //   // specular:0xffffff,
+        //   // envMap: envMap,
+        //   // combine: THREE.MultiplyOperation,
+        //   // shininess: 150,
+        //   // reflectivity: 1.0
+        // });
+
+        /* CUSTOM SHADER TEST */
+        let noiseTexture = new THREE.ImageUtils.loadTexture( 'images/cloud.png' );
+      	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
+
+      	let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/lines6.jpg' );
+      	lavaTexture.wrapS = lavaTexture.wrapT = THREE.RepeatWrapping;
+
+      	customUniforms = {
+      		baseTexture: 	{ type: "t", value: lavaTexture },
+      		baseSpeed: 		{ type: "f", value: 0.05 },
+      		noiseTexture: 	{ type: "t", value: noiseTexture },
+      		noiseScale:		{ type: "f", value: 0.5337 },
+      		alpha: 			{ type: "f", value: 1.0 },
+      		time: 			{ type: "f", value: 1.0 }
+      	};
+
+      	let customMaterial = new THREE.ShaderMaterial({
+      	  uniforms: customUniforms,
+      		vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
+      		fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+      	});
+
+        customMaterial.side = THREE.DoubleSide;
+
+        var size = 50;
+        let taurusMesh = new THREE.Mesh( new THREE.TorusGeometry( size, 0.3, 30, 30 ), customMaterial );
+				// taurusMesh.rotation.x = 0.3;
+				scene.add( taurusMesh );
+
+
+      	var flatGeometry = new THREE.PlaneGeometry( 100, 100 );
+          var surface = new THREE.Mesh( flatGeometry, customMaterial );
+      	surface.position.set(-60,50,50);
+      	scene.add( surface );
+
+        // to test shader
+        let triangleGeometry = new THREE.Geometry();
+        triangleGeometry.vertices.push(new THREE.Vector3( 0.0, 1.0, 0.0 ));
+        triangleGeometry.vertices.push(new THREE.Vector3( -80.0, -80.0, 0.0 ));
+        triangleGeometry.vertices.push(new THREE.Vector3( 80.0, -80.0, 0.0 ));
+        triangleGeometry.faces.push(new THREE.Face3( 0, 1, 2 ));
+
+        triangleGeometry.faces[0].vertexColors[0] = new THREE.Color( 0xFF0000 );
+        triangleGeometry.faces[0].vertexColors[1] = new THREE.Color( 0x00FF00 );
+        triangleGeometry.faces[0].vertexColors[2] = new THREE.Color( 0x0000FF );
+
+        let triangleMaterial = new THREE.MeshBasicMaterial({
+          // color: 0xFFFFFF,
+          vertexColors: THREE.VertexColors,
+          side: THREE.DoubleSide
+          // wireframe: true
+        });
+
+        triangleMesh = new THREE.Mesh( triangleGeometry, customMaterial );
+        triangleMesh.position.set( 0, 0, 0 );
+        scene.add( triangleMesh );
         //
 
+        //
+        let squareGeometry = new THREE.Geometry();
+        squareGeometry.vertices.push(new THREE.Vector3( 0, 0, 0 ));
+        squareGeometry.vertices.push(new THREE.Vector3( 0, 40, 0 ));
+        squareGeometry.vertices.push(new THREE.Vector3( 40, 40, 0 ));
+        squareGeometry.vertices.push(new THREE.Vector3( 40, 0, 0 ));
+        squareGeometry.faces.push(new THREE.Face3( 0, 1, 2 ))
+        squareGeometry.faces.push(new THREE.Face3( 2, 3, 0 ))
+
+        // squareGeometry.faces[0].vertexColors[0] = new THREE.Color( 0xFF0000 );
+        // squareGeometry.faces[0].vertexColors[1] = new THREE.Color( 0x00FF00 );
+        // squareGeometry.faces[0].vertexColors[2] = new THREE.Color( 0x0000FF );
+
+        let squareMaterial = new THREE.MeshBasicMaterial({
+          color: 0xFFFFFF,
+          // vertexColors: THREE.VertexColors,
+          side: THREE.DoubleSide
+          // wireframe: true
+        });
+
+        squareMesh = new THREE.Mesh( squareGeometry, customMaterial );
+        squareMesh.position.set( 0, 50, 0 )
+        scene.add( squareMesh )
+        //
+
+        // /* PROJECT FACES TEST */
+        //   let testCubeGeo = new THREE.BoxGeometry(10,10,10);
+        //   let testCubeMaterial = new THREE.MeshPhongMaterial({
+        //     color: 0xff0000,
+        //     side: THREE.DoubleSide
+        //   });
+        //   testCubeMesh = new THREE.Mesh( testCubeGeo, testCubeMaterial );
+        //   testCubeMesh.position.set(50,0,0)
+        //   scene.add( testCubeMesh );
+
+        //
+        // ADD FACEMESH TO SCENE
+        //
         faceMesh = new THREE.Mesh( faceGeometry, faceMaterial );
         scene.add( faceMesh );
 
         //
-        /* COMPUTE NORMALS */
+        /* COMPUTE NORMALS  */
           faceMesh.geometry.computeFaceNormals();
           faceMesh.geometry.computeVertexNormals();
 
@@ -340,33 +398,81 @@
           faceMesh.doubleSided = true;
 
           /* Flip normals*/
-          for(var i = 0; i<faceMesh.geometry.faces.length; i++) {
+          for(let i = 0; i<faceMesh.geometry.faces.length; i++) {
               faceMesh.geometry.faces[i].normal.x = -1*faceMesh.geometry.faces[i].normal.x;
               faceMesh.geometry.faces[i].normal.y = -1*faceMesh.geometry.faces[i].normal.y;
               faceMesh.geometry.faces[i].normal.z = -1*faceMesh.geometry.faces[i].normal.z;
           }
 
-
-        console.log(faceMesh.geometry.faces[0].color);
-        // console.log(faceMesh.material.faces[0].color);
-        // faceMesh.geometry.faces[0].color.set( {r: 255, g: 0, b: 0} );
-        // console.log(faceMesh.material.faces[0].color);
-        // faceMesh.geometry.faces[0].color.set( {r: 255, g: 0, b: 0} );
-        // console.log(faceMesh.geometry.faces[0].color.set( 0xFF0000 ));
         //
+
 
       }
 
+      // function change() {
+      //   setInterval(function(){
+      //     multi()
+      //   }, 1000);
+      // }
+
+      //
+      // // MULTI COLORCHANGE
+      //
+      function startMulti(){ multiPlaying = true; }
+      function runMulti(){
+        for (let i = 0; i < faceMesh.geometry.faces.length; i++) {
+          faceMesh.geometry.faces[i].color.setHex( Math.random() * 0xffffff );
+        }
+      }
+      function stopMulti(){ multiPlaying = false;
+        for (let i = 0; i < faceMesh.geometry.faces.length; i++) {
+          faceMesh.geometry.faces[i].color.setHex( 0xffffff );
+        }
+      }
+
+      // function white(){
+      // }
 
       //
 
       function animate() {
 
+        let delta = clock.getDelta();
+        customUniforms.time.value += delta;
+        // customUniforms2.time.value += delta;
+
         let positions = ctracker.getCurrentPosition();
         requestAnimationFrame( animate );
 
         //
-        //FACE MESHES
+        // MULTI COLORCHANGE
+        //
+        if(multiPlaying == true){
+          runMulti();
+        }
+        faceMesh.geometry.colorsNeedUpdate = true;
+        faceMesh.geometry.__dirtyColors = true;
+
+        //
+        // /* IMAGE ON FACE TEST */
+        // console.log(faceMesh.geometry.faces[0].color);
+        // faceMesh.geometry.faces[10].color.setRGB(0,0,255);
+        // console.log(faceMesh.geometry.faces[0].color);
+        // // faceMesh.geometry.vertices[vert].set(-(positions[35][0] -185), -(positions[35][1] -155), -5);
+        // console.log(faceMesh.geometry.faces[0].color);
+        // faceMesh.geometry.faces[0].color.set(255 ,255,255)
+        // // faceMesh.geometry.faces[0].color.set({r:0,g:0,b:0})
+        // console.log(faceMesh.geometry.faces[0].color);
+        // // console.log(faceMesh.geometry.faces[0]);
+
+        //
+        /* PROJECT FACES TEST */
+          // testCubeMesh.position.set(-(positions[33][0] -185), -(positions[33][1] -155), -5);
+          // testCubeMesh.geometry.verticesNeedUpdate = true;
+          // testCubeMesh.geometry.__dirtyVertices = true;
+
+        //
+        // FACE MESHES
         let vert = 0;
         for(let i = 0; i<1; i++) {
           // Right UPPER CHEECK AND EYEBROW
@@ -823,24 +929,12 @@
           faceMesh.geometry.vertices[++vert].set(-(positions[44][0] -185), -(positions[44][1] -155), -5);
 
         }
-
         faceMesh.geometry.verticesNeedUpdate = true;
         faceMesh.geometry.__dirtyVertices = true;
 
         //
 
-        // for(let i = 0; i < 40; i++) {
-        //   if(i%2 === 0) {
-        //     lineMesh.geometry.vertices[i] = {x: -(positions[0][0] -185), y: -(positions[0][1] -155), -14 0};;
-        //   } else {
-        //     lineMesh.geometry.vertices[i] = {x: -(positions[i][0] -185), y: -(positions[i][1] -155), z: 0};
-        //   }
-        // }
-        // lineMesh.geometry.verticesNeedUpdate = true;
-        // lineMesh.geometry.__dirtyVertices = true;
-
-        //
-
+        // ITERATOR TO MODIFY ALL FACES
         for (let i = 0; i < cubeMeshArray.length; i++) {
 
           // // DOTS
@@ -852,6 +946,8 @@
           // numberMeshArray[i].position.set(-(positions[i][0] -185), -(positions[i][1] -155), -5);
           // numberTextureArray[i].needsUpdate = true;
           // numberMeshArray[i].geometry.__dirtyVertices = true;
+
+
 
 				}
 
@@ -873,12 +969,27 @@
 
     </script>
 
-    <!-- draw vertices all over face -->
-    <!-- work in physics?? -->
-    <!-- smoke from eyes -->
-    <!-- beams from eyes -->
-    <!-- websocket for talking together -->
-    <!-- work into webcam and conversation -->
+    <!-- click to start animation -->
+    <!-- click to change animation -->
+
+    <!-- build forehead -->
+    <!-- physics - hair -->
+    <!-- project other planes from face -->
+    <!-- rotate head based on ratios of face-->
+    <!-- animated gifs on each face -->
+    <!-- connect points to other animations -->
+    <!-- connect face to fabric -->
+    <!-- face to dots -->
+    <!-- attach geometries with same plane -->
+
+
+    <!-- attach additional geometries to face -->
+    <!-- attach effects to each face -->
+
+    <!-- scale face across z plane based on size -->
+
+
+    <!-- add post processer -->
 
 
 
