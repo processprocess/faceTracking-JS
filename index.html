@@ -183,12 +183,12 @@
           faceGeometry.faces.push(new THREE.Face3( i, i+1, i+2 ));
         }
 
-        // // BLUE WIREFRAME
-        // let faceMaterial = new THREE.MeshBasicMaterial({
-        //   color: 0x0000FF,
-        //   side: THREE.DoubleSide,
-        //   wireframe: true
-        // });
+        // BLUE WIREFRAME
+        let faceMaterial = new THREE.MeshBasicMaterial({
+          color: 0x0000FF,
+          side: THREE.DoubleSide,
+          wireframe: true
+        });
 
         // // RAINBOW VERTICES
         // for(let i = 0; i < 111; i+=1 ) {
@@ -201,14 +201,14 @@
         //   side: THREE.DoubleSide
         // });
 
-        // RONDOM COLOR PHONG
-        for(let i = 0; i < 111; i+=1 ) {
-          faceGeometry.faces[ i ].color.setHex( Math.random() * 0xffffff );
-        }
-        let faceMaterial = new THREE.MeshPhongMaterial({
-          vertexColors: THREE.VertexColors,
-          side: THREE.DoubleSide
-        });
+        // // RONDOM COLOR PHONG
+        // for(let i = 0; i < 111; i+=1 ) {
+        //   faceGeometry.faces[ i ].color.setHex( Math.random() * 0xffffff );
+        // }
+        // let faceMaterial = new THREE.MeshPhongMaterial({
+        //   vertexColors: THREE.VertexColors,
+        //   side: THREE.DoubleSide
+        // });
 
         //
 
@@ -716,11 +716,11 @@
           // let currentX = cubeMeshArray[i].position.x = -(positions[i][0] -185);
           // let currentY = cubeMeshArray[i].position.y = -(positions[i][1] -155);
 
-          // // NUMBERS
-          // numberContextArray[i].fillText(i, 0, 120);
-          // numberMeshArray[i].position.set(-(positions[i][0] -185), -(positions[i][1] -155), -5);
-          // numberTextureArray[i].needsUpdate = true;
-          // numberMeshArray[i].geometry.__dirtyVertices = true;
+          // NUMBERS
+          numberContextArray[i].fillText(i, 0, 120);
+          numberMeshArray[i].position.set(-(positions[i][0] -185), -(positions[i][1] -155), -5);
+          numberTextureArray[i].needsUpdate = true;
+          numberMeshArray[i].geometry.__dirtyVertices = true;
 
 				}
 
