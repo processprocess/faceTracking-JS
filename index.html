@@ -34,6 +34,7 @@
     <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 	</head>
 	<body>
+
     <!-- ---------------- Custom Shader Code ------------------------ -->
     <script id="vertexShader" type="x-shader/x-vertex">
     varying vec2 vUv;
@@ -66,6 +67,7 @@
     }
     </script>
     <!-- ----------------------------------------------------------- -->
+
     <h2>FACE_LAB</h2>
 
     <video id="video" width="368"  height="288" autoplay="" loop=""></video>
@@ -136,25 +138,25 @@
           controls.enableDamping = true;
           window.addEventListener( 'resize', onWindowResize, false );
 
-        // // FACE CONTAINER AND DOTS
-          // let faceContainerGeometry = new THREE.BoxGeometry( 0.0, 0.0, 0.0 );
-          // let faceContainerMaterial = new THREE.MeshLambertMaterial({
-          //   color: 0xFF0000
-          // });
-          // let faceContainerMesh = new THREE.Mesh( faceContainerGeometry, faceContainerMaterial );
-          //
-          // let cubeGeometry = new THREE.BoxGeometry(.5,.5,.5);
-          // let cubeMaterial = new THREE.MeshLambertMaterial({
-          //   color: 0x0000FF
-          // });
-          //
-          // for (let i = 0; i < 71; i++) {
-  				// 	let cubeMesh = new THREE.Mesh( cubeGeometry, cubeMaterial );
-          //   cubeMeshArray.push( cubeMesh );
-          //   faceContainerMesh.add( cubeMesh );
-  				// }
-          // faceContainerMesh.position.set(0, 0, 0);
-          // scene.add( faceContainerMesh );
+        // // FACE CONTAINER - FOR DOTS and NUMBERS
+        //   let faceContainerGeometry = new THREE.BoxGeometry( 0.0, 0.0, 0.0 );
+        //   let faceContainerMaterial = new THREE.MeshLambertMaterial({
+        //     color: 0xFF0000
+        //   });
+        //   let faceContainerMesh = new THREE.Mesh( faceContainerGeometry, faceContainerMaterial );
+        //
+        //   let cubeGeometry = new THREE.BoxGeometry(.5,.5,.5);
+        //   let cubeMaterial = new THREE.MeshLambertMaterial({
+        //     color: 0x0000FF
+        //   });
+        //
+        //   for (let i = 0; i < 71; i++) {
+  			// 		let cubeMesh = new THREE.Mesh( cubeGeometry, cubeMaterial );
+        //     cubeMeshArray.push( cubeMesh );
+        //     faceContainerMesh.add( cubeMesh );
+  			// 	}
+        //   faceContainerMesh.position.set(0, 0, 0);
+        //   scene.add( faceContainerMesh );
 
         // // LINES FROM ONE VERTEX
           // let lineGeometry = new THREE.Geometry();
@@ -235,6 +237,31 @@
           faceGeometry.vertices.push(new THREE.Vector3( 10.0, -10.0, 0.0 ));
           faceGeometry.faces.push(new THREE.Face3( i, i+1, i+2 ));
         }
+        // GENERATE NORMALS
+        faceGeometry.computeBoundingBox();
+          var max = faceGeometry.boundingBox.max,
+              min = faceGeometry.boundingBox.min;
+          var offset = new THREE.Vector2(0 - min.x, 0 - min.y);
+          var range = new THREE.Vector2(max.x - min.x, max.y - min.y);
+          var faces = faceGeometry.faces;
+          faceGeometry.faceVertexUvs[0] = [];
+          for (var i = 0; i < faces.length ; i++) {
+              var v1 = faceGeometry.vertices[faces[i].a],
+                  v2 = faceGeometry.vertices[faces[i].b],
+                  v3 = faceGeometry.vertices[faces[i].c];
+              faceGeometry.faceVertexUvs[0].push([
+                  new THREE.Vector2((v1.x + offset.x)/range.x ,(v1.y + offset.y)/range.y),
+                  new THREE.Vector2((v2.x + offset.x)/range.x ,(v2.y + offset.y)/range.y),
+                  new THREE.Vector2((v3.x + offset.x)/range.x ,(v3.y + offset.y)/range.y)
+              ]);
+          }
+          faceGeometry.uvsNeedUpdate = true;
+
+        // SOLID WHITE PHONG
+        let faceMaterial = new THREE.MeshPhongMaterial({
+          color: 0xFFFFFF,
+          vertexColors: THREE.FaceColors
+        });
 
         // // BLUE WIREFRAME
         // let faceMaterial = new THREE.MeshBasicMaterial({
@@ -268,12 +295,6 @@
         //   color: 0x0000ff,
         //   vertexColors: THREE.FaceColors
         // });
-
-        // SOLID WHITE PHONG
-        let faceMaterial = new THREE.MeshPhongMaterial({
-          color: 0xFFFFFF,
-          vertexColors: THREE.FaceColors
-        });
 
         // // CHROME PHONG
         // let faceMaterial = new THREE.MeshPhongMaterial({
@@ -309,64 +330,58 @@
 
         customMaterial.side = THREE.DoubleSide;
 
-        var size = 50;
-        let taurusMesh = new THREE.Mesh( new THREE.TorusGeometry( size, 0.3, 30, 30 ), customMaterial );
-				// taurusMesh.rotation.x = 0.3;
-				scene.add( taurusMesh );
+      	// var flatGeometry = new THREE.PlaneGeometry( 100, 100 );
+        //   var surface = new THREE.Mesh( flatGeometry, customMaterial );
+      	// surface.position.set(-60,50,50);
+      	// scene.add( surface );
 
-
-      	var flatGeometry = new THREE.PlaneGeometry( 100, 100 );
-          var surface = new THREE.Mesh( flatGeometry, customMaterial );
-      	surface.position.set(-60,50,50);
-      	scene.add( surface );
-
-        // to test shader
-        let triangleGeometry = new THREE.Geometry();
-        triangleGeometry.vertices.push(new THREE.Vector3( 0.0, 1.0, 0.0 ));
-        triangleGeometry.vertices.push(new THREE.Vector3( -80.0, -80.0, 0.0 ));
-        triangleGeometry.vertices.push(new THREE.Vector3( 80.0, -80.0, 0.0 ));
-        triangleGeometry.faces.push(new THREE.Face3( 0, 1, 2 ));
-
-        triangleGeometry.faces[0].vertexColors[0] = new THREE.Color( 0xFF0000 );
-        triangleGeometry.faces[0].vertexColors[1] = new THREE.Color( 0x00FF00 );
-        triangleGeometry.faces[0].vertexColors[2] = new THREE.Color( 0x0000FF );
-
-        let triangleMaterial = new THREE.MeshBasicMaterial({
-          // color: 0xFFFFFF,
-          vertexColors: THREE.VertexColors,
-          side: THREE.DoubleSide
-          // wireframe: true
-        });
-
-        triangleMesh = new THREE.Mesh( triangleGeometry, customMaterial );
-        triangleMesh.position.set( 0, 0, 0 );
-        scene.add( triangleMesh );
+        // // to test shader
+        // let triangleGeometry = new THREE.Geometry();
+        // triangleGeometry.vertices.push(new THREE.Vector3( 0.0, 1.0, 0.0 ));
+        // triangleGeometry.vertices.push(new THREE.Vector3( -80.0, -80.0, 0.0 ));
+        // triangleGeometry.vertices.push(new THREE.Vector3( 80.0, -80.0, 0.0 ));
+        // triangleGeometry.faces.push(new THREE.Face3( 0, 1, 2 ));
         //
-
+        // triangleGeometry.faces[0].vertexColors[0] = new THREE.Color( 0xFF0000 );
+        // triangleGeometry.faces[0].vertexColors[1] = new THREE.Color( 0x00FF00 );
+        // triangleGeometry.faces[0].vertexColors[2] = new THREE.Color( 0x0000FF );
         //
-        let squareGeometry = new THREE.Geometry();
-        squareGeometry.vertices.push(new THREE.Vector3( 0, 0, 0 ));
-        squareGeometry.vertices.push(new THREE.Vector3( 0, 40, 0 ));
-        squareGeometry.vertices.push(new THREE.Vector3( 40, 40, 0 ));
-        squareGeometry.vertices.push(new THREE.Vector3( 40, 0, 0 ));
-        squareGeometry.faces.push(new THREE.Face3( 0, 1, 2 ))
-        squareGeometry.faces.push(new THREE.Face3( 2, 3, 0 ))
-
-        // squareGeometry.faces[0].vertexColors[0] = new THREE.Color( 0xFF0000 );
-        // squareGeometry.faces[0].vertexColors[1] = new THREE.Color( 0x00FF00 );
-        // squareGeometry.faces[0].vertexColors[2] = new THREE.Color( 0x0000FF );
-
-        let squareMaterial = new THREE.MeshBasicMaterial({
-          color: 0xFFFFFF,
-          // vertexColors: THREE.VertexColors,
-          side: THREE.DoubleSide
-          // wireframe: true
-        });
-
-        squareMesh = new THREE.Mesh( squareGeometry, customMaterial );
-        squareMesh.position.set( 0, 50, 0 )
-        scene.add( squareMesh )
+        // let triangleMaterial = new THREE.MeshBasicMaterial({
+        //   // color: 0xFFFFFF,
+        //   vertexColors: THREE.VertexColors,
+        //   side: THREE.DoubleSide
+        //   // wireframe: true
+        // });
         //
+        // triangleMesh = new THREE.Mesh( triangleGeometry, customMaterial );
+        // triangleMesh.position.set( 0, 0, 0 );
+        // scene.add( triangleMesh );
+        // //
+
+        // //
+        // let squareGeometry = new THREE.Geometry();
+        // squareGeometry.vertices.push(new THREE.Vector3( 0, 0, 0 ));
+        // squareGeometry.vertices.push(new THREE.Vector3( 0, 40, 0 ));
+        // squareGeometry.vertices.push(new THREE.Vector3( 40, 40, 0 ));
+        // squareGeometry.vertices.push(new THREE.Vector3( 40, 0, 0 ));
+        // squareGeometry.faces.push(new THREE.Face3( 0, 1, 2 ))
+        // squareGeometry.faces.push(new THREE.Face3( 2, 3, 0 ))
+        //
+        // // squareGeometry.faces[0].vertexColors[0] = new THREE.Color( 0xFF0000 );
+        // // squareGeometry.faces[0].vertexColors[1] = new THREE.Color( 0x00FF00 );
+        // // squareGeometry.faces[0].vertexColors[2] = new THREE.Color( 0x0000FF );
+        //
+        // let squareMaterial = new THREE.MeshBasicMaterial({
+        //   color: 0xFFFFFF,
+        //   // vertexColors: THREE.VertexColors,
+        //   side: THREE.DoubleSide
+        //   // wireframe: true
+        // });
+        //
+        // squareMesh = new THREE.Mesh( squareGeometry, customMaterial );
+        // squareMesh.position.set( 0, 50, 0 )
+        // scene.add( squareMesh )
+        // //
 
         // /* PROJECT FACES TEST */
         //   let testCubeGeo = new THREE.BoxGeometry(10,10,10);
@@ -382,6 +397,7 @@
         // ADD FACEMESH TO SCENE
         //
         faceMesh = new THREE.Mesh( faceGeometry, faceMaterial );
+        // faceMesh = new THREE.Mesh( faceGeometry, customMaterial );
         scene.add( faceMesh );
 
         //
@@ -444,7 +460,7 @@
         let positions = ctracker.getCurrentPosition();
         requestAnimationFrame( animate );
 
-        //
+
         // MULTI COLORCHANGE
         //
         if(multiPlaying == true){
@@ -453,7 +469,7 @@
         faceMesh.geometry.colorsNeedUpdate = true;
         faceMesh.geometry.__dirtyColors = true;
 
-        //
+
         // /* IMAGE ON FACE TEST */
         // console.log(faceMesh.geometry.faces[0].color);
         // faceMesh.geometry.faces[10].color.setRGB(0,0,255);
@@ -465,13 +481,13 @@
         // console.log(faceMesh.geometry.faces[0].color);
         // // console.log(faceMesh.geometry.faces[0]);
 
-        //
+
         /* PROJECT FACES TEST */
           // testCubeMesh.position.set(-(positions[33][0] -185), -(positions[33][1] -155), -5);
           // testCubeMesh.geometry.verticesNeedUpdate = true;
           // testCubeMesh.geometry.__dirtyVertices = true;
 
-        //
+
         // FACE MESHES
         let vert = 0;
         for(let i = 0; i<1; i++) {
@@ -946,8 +962,6 @@
           // numberMeshArray[i].position.set(-(positions[i][0] -185), -(positions[i][1] -155), -5);
           // numberTextureArray[i].needsUpdate = true;
           // numberMeshArray[i].geometry.__dirtyVertices = true;
-
-
 
 				}
 
