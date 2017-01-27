@@ -44,7 +44,6 @@
         gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
     }
     </script>
-
     <!-- fragment shader a.k.a. pixel shader -->
     <script id="fragmentShader" type="x-shader/x-vertex">
     uniform sampler2D baseTexture;
@@ -306,11 +305,31 @@
         //   // reflectivity: 1.0
         // });
 
-        /* CUSTOM SHADER TEST */
+        /* CUSTOM SHADER */
         let noiseTexture = new THREE.ImageUtils.loadTexture( 'images/cloud.png' );
       	noiseTexture.wrapS = noiseTexture.wrapT = THREE.RepeatWrapping;
 
-      	let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/lines6.jpg' );
+        // let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/paper4.jpg' );
+        // let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/paper3.png' );
+        // let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/paper2.jpg' );
+        // let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/paper1.jpg' );
+        // let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/hazard7.png' );
+        // let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/hazard6.png' );
+        // let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/hazard5.png' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/hazard4.jpg' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/hazard3.jpg' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/hazard2.jpg' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/hazard1.jpg' );
+        let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/bigline1.png' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/thicklines1.jpg' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/colorlines.png' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/thicklines.jpg' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/dots1.jpg' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/dots2.jpg' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/dots4.jpg' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/geo.gif' );
+        // let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/dots0.png' );
+      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/lines0.png' );
       	lavaTexture.wrapS = lavaTexture.wrapT = THREE.RepeatWrapping;
 
       	customUniforms = {
@@ -383,21 +402,21 @@
         // scene.add( squareMesh )
         // //
 
-        // /* PROJECT FACES TEST */
-        //   let testCubeGeo = new THREE.BoxGeometry(10,10,10);
-        //   let testCubeMaterial = new THREE.MeshPhongMaterial({
-        //     color: 0xff0000,
-        //     side: THREE.DoubleSide
-        //   });
-        //   testCubeMesh = new THREE.Mesh( testCubeGeo, testCubeMaterial );
-        //   testCubeMesh.position.set(50,0,0)
-        //   scene.add( testCubeMesh );
+        /* ATTACH FACES TEST */
+          let testCubeGeo = new THREE.BoxGeometry(3,100,3);
+          let testCubeMaterial = new THREE.MeshPhongMaterial({
+            color: 0xff0000,
+            side: THREE.DoubleSide
+          });
+          testCubeMesh = new THREE.Mesh( testCubeGeo, testCubeMaterial );
+          testCubeMesh.position.set(50,0,0)
+          scene.add( testCubeMesh );
 
         //
         // ADD FACEMESH TO SCENE
         //
-        faceMesh = new THREE.Mesh( faceGeometry, faceMaterial );
-        // faceMesh = new THREE.Mesh( faceGeometry, customMaterial );
+        // faceMesh = new THREE.Mesh( faceGeometry, faceMaterial );
+        faceMesh = new THREE.Mesh( faceGeometry, customMaterial );
         scene.add( faceMesh );
 
         //
@@ -482,10 +501,10 @@
         // // console.log(faceMesh.geometry.faces[0]);
 
 
-        /* PROJECT FACES TEST */
-          // testCubeMesh.position.set(-(positions[33][0] -185), -(positions[33][1] -155), -5);
-          // testCubeMesh.geometry.verticesNeedUpdate = true;
-          // testCubeMesh.geometry.__dirtyVertices = true;
+        /* ATTACH FACES TEST */
+          testCubeMesh.position.set(-(positions[33][0] -185), -(positions[33][1] -155), -70);
+          testCubeMesh.geometry.verticesNeedUpdate = true;
+          testCubeMesh.geometry.__dirtyVertices = true;
 
 
         // FACE MESHES
