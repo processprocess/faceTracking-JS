@@ -26,14 +26,14 @@
         right: 0;
       }
     </style>
+    <script src="https://threejs.org/build/three.min.js"> </script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
     <script src="./js/clmtrackr/utils.js"></script>
     <script src="./js/clmtrackr/clmtrackr.js"></script>
     <script src="./js/clmtrackr/model_pca_20_svm.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script> -->
     <script src="./js/Cloth.js"></script>
     <script src="./js/libs/stats.min.js"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script> -->
-    <script src="https://threejs.org/build/three.min.js"> </script>
-    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 	</head>
 	<body>
 
@@ -42,8 +42,8 @@
     varying vec2 vUv;
     void main()
     {
-        vUv = uv;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
     }
     </script>
     <!-- fragment shader a.k.a. pixel shader -->
@@ -98,7 +98,7 @@
 
       //
 
-      var stats;
+      let stats;
 
       let cubeMeshArray = [];
       let scene, renderer, camera;
@@ -115,11 +115,11 @@
       let customUniforms;
 
       pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-      var clothGeometry;
-      var clothRed;
+      let clothGeometry;
+      let clothRed;
       let clothMaterialRed;
-      var clothBlue;
-      let clothMaterialBlue;
+      // let clothBlue;
+      // let clothMaterialBlue;
 
       //
 
@@ -151,25 +151,25 @@
           //
           window.addEventListener( 'resize', onWindowResize, false );
 
-        // // FACE CONTAINER - FOR DOTS and NUMBERS
-        //   let faceContainerGeometry = new THREE.BoxGeometry( 0.0, 0.0, 0.0 );
-        //   let faceContainerMaterial = new THREE.MeshLambertMaterial({
-        //     color: 0xFF0000
-        //   });
-        //   let faceContainerMesh = new THREE.Mesh( faceContainerGeometry, faceContainerMaterial );
-        //
-        //   let cubeGeometry = new THREE.BoxGeometry(.5,.5,.5);
-        //   let cubeMaterial = new THREE.MeshLambertMaterial({
-        //     color: 0x0000FF
-        //   });
-        //
-        //   for (let i = 0; i < 71; i++) {
-  			// 		let cubeMesh = new THREE.Mesh( cubeGeometry, cubeMaterial );
-        //     cubeMeshArray.push( cubeMesh );
-        //     faceContainerMesh.add( cubeMesh );
-  			// 	}
-        //   faceContainerMesh.position.set(0, 0, 0);
-        //   scene.add( faceContainerMesh );
+        // FACE CONTAINER - FOR DOTS and NUMBERS
+          let faceContainerGeometry = new THREE.BoxGeometry( 0.0, 0.0, 0.0 );
+          let faceContainerMaterial = new THREE.MeshLambertMaterial({
+            color: 0xFF0000
+          });
+          let faceContainerMesh = new THREE.Mesh( faceContainerGeometry, faceContainerMaterial );
+
+          let cubeGeometry = new THREE.BoxGeometry(.5,.5,.5);
+          let cubeMaterial = new THREE.MeshLambertMaterial({
+            color: 0x0000FF
+          });
+
+          for (let i = 0; i < 71; i++) {
+  					let cubeMesh = new THREE.Mesh( cubeGeometry, cubeMaterial );
+            cubeMeshArray.push( cubeMesh );
+            faceContainerMesh.add( cubeMesh );
+  				}
+          faceContainerMesh.position.set(0, 0, 0);
+          scene.add( faceContainerMesh );
 
         // // LINES FROM ONE VERTEX
           // let lineGeometry = new THREE.Geometry();
@@ -252,14 +252,14 @@
         }
         // GENERATE NORMALS
         faceGeometry.computeBoundingBox();
-          var max = faceGeometry.boundingBox.max,
+          let max = faceGeometry.boundingBox.max,
               min = faceGeometry.boundingBox.min;
-          var offset = new THREE.Vector2(0 - min.x, 0 - min.y);
-          var range = new THREE.Vector2(max.x - min.x, max.y - min.y);
-          var faces = faceGeometry.faces;
+          let offset = new THREE.Vector2(0 - min.x, 0 - min.y);
+          let range = new THREE.Vector2(max.x - min.x, max.y - min.y);
+          let faces = faceGeometry.faces;
           faceGeometry.faceVertexUvs[0] = [];
-          for (var i = 0; i < faces.length ; i++) {
-              var v1 = faceGeometry.vertices[faces[i].a],
+          for (let i = 0; i < faces.length ; i++) {
+              let v1 = faceGeometry.vertices[faces[i].a],
                   v2 = faceGeometry.vertices[faces[i].b],
                   v3 = faceGeometry.vertices[faces[i].c];
               faceGeometry.faceVertexUvs[0].push([
@@ -363,7 +363,7 @@
 
         customMaterial.side = THREE.DoubleSide;
 
-        // /* ATTACH FACES TEST */
+        // /* ATTACH ADDITIONAL GEO TEST */
         //   let testCubeGeo = new THREE.BoxGeometry(5,150,5);
         //   let testCubeMaterial = new THREE.MeshPhongMaterial({
         //     color: 0xff0000,
@@ -376,8 +376,8 @@
         //
         // ADD FACEMESH TO SCENE
         //
-        // faceMesh = new THREE.Mesh( faceGeometry, faceMaterial );
-        faceMesh = new THREE.Mesh( faceGeometry, customMaterial );
+        faceMesh = new THREE.Mesh( faceGeometry, faceMaterial );
+        // faceMesh = new THREE.Mesh( faceGeometry, customMaterial );
         scene.add( faceMesh );
 
         //
@@ -402,6 +402,32 @@
 
         //
 
+        //
+				// MAKE CLOTH
+				//
+        let p = cloth.particles;
+				clothGeometry = new THREE.ParametricGeometry( clothFunction, cloth.w, cloth.h );
+				clothGeometry.dynamic = true;
+
+        console.log(cloth.w);
+
+				clothMaterialRed = new THREE.MeshPhongMaterial( {
+					color: 0xff0000,
+					side: THREE.DoubleSide
+				} );
+				clothRed = new THREE.Mesh( clothGeometry, clothMaterialRed );
+				clothRed.position.set( 0, 0, 0 );
+				clothRed.castShadow = true;
+				scene.add( clothRed );
+
+				// clothMaterialBlue = new THREE.MeshPhongMaterial( {
+				// 	color: 0x0000ff,
+				// 	side: THREE.DoubleSide
+				// } );
+				// clothBlue = new THREE.Mesh( clothGeometry, clothMaterialBlue );
+				// clothBlue.position.set( 100, 0, 200 );
+				// clothBlue.castShadow = true;
+				// scene.add( clothBlue );
 
       }
 
@@ -432,13 +458,45 @@
       //
 
       function animate() {
-
         let delta = clock.getDelta();
         customUniforms.time.value += delta;
         // customUniforms2.time.value += delta;
 
         let positions = ctracker.getCurrentPosition();
         requestAnimationFrame( animate );
+
+
+        //
+				// WIND SIMULATION - THIS IS IMPORTANT
+				//
+				var time = Date.now();
+				windStrength = Math.cos( time / 7000 ) * 20 + 40;
+				windForce.set( Math.sin( time / 2000 ), Math.cos( time / 3000 ), Math.sin( time / 1000 ) ).normalize().multiplyScalar( windStrength );
+
+        simulate( time );
+
+        var p = cloth.particles;
+				for ( var i = 0, il = p.length; i < il; i ++ ) {
+					clothGeometry.vertices[ i ].copy( p[ i ].position );
+				}
+				clothGeometry.computeFaceNormals();
+				clothGeometry.computeVertexNormals();
+				clothGeometry.normalsNeedUpdate = true;
+				clothGeometry.verticesNeedUpdate = true;
+
+				// PIN POSIT
+				var xy0 = pins[ 0 ];
+				var p0 = cloth.particles[ xy0 ];
+				p0.position.set(-(positions[10][0] -185), -(positions[10][1] -175), -17);
+				// p0.position.set( -100 , 200, -500 );
+
+		    // var xy1 = pins[ 10 ];
+		    // var p1 = cloth.particles[ xy1 ];
+		    // p1.position.set(-(positions[3][0] -185), -(positions[3][1] -175), -17);
+		    // p1.position.set( 100, 200, -500 );
+
+
+// 10 3
 
 
         // MULTI COLORCHANGE
@@ -462,7 +520,7 @@
         // // console.log(faceMesh.geometry.faces[0]);
 
 
-        // /* ATTACH FACES TEST */
+        // /* ATTACH ADDITIONAL GEO TEST */
         //   testCubeMesh.position.set(-(positions[33][0] -185), -(positions[33][1] -155), -70);
         //   testCubeMesh.geometry.verticesNeedUpdate = true;
         //   testCubeMesh.geometry.__dirtyVertices = true;
@@ -937,7 +995,7 @@
           // let currentX = cubeMeshArray[i].position.x = -(positions[i][0] -185);
           // let currentY = cubeMeshArray[i].position.y = -(positions[i][1] -155);
 
-          // // NUMBERS
+          // NUMBERS
           // numberContextArray[i].fillText(i, 0, 120);
           // numberMeshArray[i].position.set(-(positions[i][0] -185), -(positions[i][1] -155), -5);
           // numberTextureArray[i].needsUpdate = true;
