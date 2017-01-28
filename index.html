@@ -26,10 +26,12 @@
         right: 0;
       }
     </style>
-    <script src="./libs/utils.js"></script>
-    <script src="./libs/clmtrackr.js"></script>
-    <script src="./libs/model_pca_20_svm.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+    <script src="./js/clmtrackr/utils.js"></script>
+    <script src="./js/clmtrackr/clmtrackr.js"></script>
+    <script src="./js/clmtrackr/model_pca_20_svm.js"></script>
+    <script src="./js/Cloth.js"></script>
+    <script src="./js/libs/stats.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script> -->
     <script src="https://threejs.org/build/three.min.js"> </script>
     <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 	</head>
@@ -96,6 +98,8 @@
 
       //
 
+      var stats;
+
       let cubeMeshArray = [];
       let scene, renderer, camera;
       let lineMesh;
@@ -108,8 +112,14 @@
       let multiPlaying = false;
 
       let clock = new THREE.Clock();
-      let triangleMesh;
       let customUniforms;
+
+      pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      var clothGeometry;
+      var clothRed;
+      let clothMaterialRed;
+      var clothBlue;
+      let clothMaterialBlue;
 
       //
 
@@ -129,12 +139,16 @@
           renderer.setSize( window.innerWidth, window.innerHeight );
           threeContainer.appendChild( renderer.domElement );
           // renderer.setClearColor( 0xFFFFFF, 1);
-          renderer.setClearColor( 0x333F47, 0.4);
+          renderer.setClearColor( 0x111111, 0.4);
           controls = new THREE.OrbitControls( camera, renderer.domElement );
           controls.enablePan = true;
           controls.enableZoom = true;
           controls.enableRotate = true;
           controls.enableDamping = true;
+          //
+          stats = new Stats();
+          threeContainer.appendChild( stats.dom );
+          //
           window.addEventListener( 'resize', onWindowResize, false );
 
         // // FACE CONTAINER - FOR DOTS and NUMBERS
@@ -320,10 +334,10 @@
       	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/hazard3.jpg' );
       	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/hazard2.jpg' );
       	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/hazard1.jpg' );
-        let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/bigline1.png' );
+        // let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/bigline1.png' );
       	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/thicklines1.jpg' );
       	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/colorlines.png' );
-      	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/thicklines.jpg' );
+      	let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/thicklines.jpg' );
       	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/dots1.jpg' );
       	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/dots2.jpg' );
       	// let lavaTexture = new THREE.ImageUtils.loadTexture( 'images/dots4.jpg' );
@@ -349,68 +363,15 @@
 
         customMaterial.side = THREE.DoubleSide;
 
-      	// var flatGeometry = new THREE.PlaneGeometry( 100, 100 );
-        //   var surface = new THREE.Mesh( flatGeometry, customMaterial );
-      	// surface.position.set(-60,50,50);
-      	// scene.add( surface );
-
-        // // to test shader
-        // let triangleGeometry = new THREE.Geometry();
-        // triangleGeometry.vertices.push(new THREE.Vector3( 0.0, 1.0, 0.0 ));
-        // triangleGeometry.vertices.push(new THREE.Vector3( -80.0, -80.0, 0.0 ));
-        // triangleGeometry.vertices.push(new THREE.Vector3( 80.0, -80.0, 0.0 ));
-        // triangleGeometry.faces.push(new THREE.Face3( 0, 1, 2 ));
-        //
-        // triangleGeometry.faces[0].vertexColors[0] = new THREE.Color( 0xFF0000 );
-        // triangleGeometry.faces[0].vertexColors[1] = new THREE.Color( 0x00FF00 );
-        // triangleGeometry.faces[0].vertexColors[2] = new THREE.Color( 0x0000FF );
-        //
-        // let triangleMaterial = new THREE.MeshBasicMaterial({
-        //   // color: 0xFFFFFF,
-        //   vertexColors: THREE.VertexColors,
-        //   side: THREE.DoubleSide
-        //   // wireframe: true
-        // });
-        //
-        // triangleMesh = new THREE.Mesh( triangleGeometry, customMaterial );
-        // triangleMesh.position.set( 0, 0, 0 );
-        // scene.add( triangleMesh );
-        // //
-
-        // //
-        // let squareGeometry = new THREE.Geometry();
-        // squareGeometry.vertices.push(new THREE.Vector3( 0, 0, 0 ));
-        // squareGeometry.vertices.push(new THREE.Vector3( 0, 40, 0 ));
-        // squareGeometry.vertices.push(new THREE.Vector3( 40, 40, 0 ));
-        // squareGeometry.vertices.push(new THREE.Vector3( 40, 0, 0 ));
-        // squareGeometry.faces.push(new THREE.Face3( 0, 1, 2 ))
-        // squareGeometry.faces.push(new THREE.Face3( 2, 3, 0 ))
-        //
-        // // squareGeometry.faces[0].vertexColors[0] = new THREE.Color( 0xFF0000 );
-        // // squareGeometry.faces[0].vertexColors[1] = new THREE.Color( 0x00FF00 );
-        // // squareGeometry.faces[0].vertexColors[2] = new THREE.Color( 0x0000FF );
-        //
-        // let squareMaterial = new THREE.MeshBasicMaterial({
-        //   color: 0xFFFFFF,
-        //   // vertexColors: THREE.VertexColors,
-        //   side: THREE.DoubleSide
-        //   // wireframe: true
-        // });
-        //
-        // squareMesh = new THREE.Mesh( squareGeometry, customMaterial );
-        // squareMesh.position.set( 0, 50, 0 )
-        // scene.add( squareMesh )
-        // //
-
-        /* ATTACH FACES TEST */
-          let testCubeGeo = new THREE.BoxGeometry(3,100,3);
-          let testCubeMaterial = new THREE.MeshPhongMaterial({
-            color: 0xff0000,
-            side: THREE.DoubleSide
-          });
-          testCubeMesh = new THREE.Mesh( testCubeGeo, testCubeMaterial );
-          testCubeMesh.position.set(50,0,0)
-          scene.add( testCubeMesh );
+        // /* ATTACH FACES TEST */
+        //   let testCubeGeo = new THREE.BoxGeometry(5,150,5);
+        //   let testCubeMaterial = new THREE.MeshPhongMaterial({
+        //     color: 0xff0000,
+        //     side: THREE.DoubleSide
+        //   });
+        //   testCubeMesh = new THREE.Mesh( testCubeGeo, testCubeMaterial );
+        //   testCubeMesh.position.set(50,0,0)
+        //   scene.add( testCubeMesh );
 
         //
         // ADD FACEMESH TO SCENE
@@ -501,10 +462,10 @@
         // // console.log(faceMesh.geometry.faces[0]);
 
 
-        /* ATTACH FACES TEST */
-          testCubeMesh.position.set(-(positions[33][0] -185), -(positions[33][1] -155), -70);
-          testCubeMesh.geometry.verticesNeedUpdate = true;
-          testCubeMesh.geometry.__dirtyVertices = true;
+        // /* ATTACH FACES TEST */
+        //   testCubeMesh.position.set(-(positions[33][0] -185), -(positions[33][1] -155), -70);
+        //   testCubeMesh.geometry.verticesNeedUpdate = true;
+        //   testCubeMesh.geometry.__dirtyVertices = true;
 
 
         // FACE MESHES
@@ -986,10 +947,12 @@
 
         //
 
-        TWEEN.update();
+        // TWEEN.update();
         controls.update();
         renderer.render( scene, camera );
-
+        //
+        stats.update();
+        //
       }
 
       //
